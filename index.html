@@ -543,11 +543,7 @@ function saveData(){
     dailyPay: isOff ? "฿0.00" : (isHalf ? "฿200.00" : "฿" + (400 + ot * 50).toFixed(2))
   };
 
-  let allData =
-    JSON.parse(localStorage.getItem("kyoeData")) || [];
-
-  allData.unshift(data);
-
+  // ... (အပေါ်က ကုဒ်များ)
   localStorage.setItem(
     "kyoeData",
     JSON.stringify(allData)
@@ -557,6 +553,9 @@ function saveData(){
   btn.innerText = "ADD RECORD";
 
   showToast("သိမ်းဆည်းပြီးပါပြီ");
+
+  // 🛠️ ပြင်ရမည့်နေရာ: လက်ရှိရွေးထားတဲ့ လကို MonthView dropdown ထဲ ပြန်ထည့်ပေးရန်
+  document.getElementById("monthView").value = new Date(data.date).toLocaleString('en-US', { month: 'long' }).toUpperCase();
 
   loadData();
 }
