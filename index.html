@@ -248,6 +248,15 @@ END TIME
 
 </label>
 
+<label class="text-[10px] text-cyan-400 font-bold mb-1 block">
+အလုပ်ဝင်ချိန်
+</label>
+
+<select id="startTime" class="table-input mb-3" onchange="calculate()">
+  <option value="08:00 AM">08:00 AM</option>
+  <option value="OFF DAY">အလုပ်ပိတ်ရက်</option>
+</select>
+  
 <select
 id="endTime"
 class="table-input mb-4"
@@ -985,160 +994,68 @@ function changePage(step){
   renderTable();
 }
 
+
 function saveData(){
-
-  const btn =
-  document.getElementById(
-    "addBtn"
-  );
-
+  const btn = document.getElementById("addBtn");
   btn.disabled = true;
-
   btn.innerText = "SAVING...";
 
-  let dateValue =
-  document.getElementById(
-    "date"
-  ).value;
-
-  let endVal =
-  document.getElementById(
-    "endTime"
-  ).value;
+  let dateValue = document.getElementById("date").value;
+  let startVal = document.getElementById("startTime").value;
+  let endVal = document.getElementById("endTime").value;
 
   let map = {
-
     "05:00 PM":9,
     "06:00 PM":10,
     "07:00 PM":11,
     "08:00 PM":12,
     "09:00 PM":13,
     "10:00 PM":14
-
   };
 
-  let hrs =
-  map[endVal] || 0;
+  let hrs = map[endVal] || 0;
 
-  let isOff =
-  endVal === "OFF DAY";
+  let isOff = endVal === "OFF DAY";
+  let isHalf = endVal === "12:00 PM";
 
-  let isHalf =
-  endVal === "12:00 PM";
-
-  let ot =
-  hrs > 9
-  ? hrs - 9
-  : 0;
+  let ot = hrs > 9 ? hrs - 9 : 0;
 
   let data = {
+    date: dateValue,
+    startTime: startVal,
+    endTime: endVal,
+    workHours: isOff ? 0 : (isHalf ? 4 : hrs),
+    otHours: (isOff || isHalf) ? 0 : ot,
+    otPay: (isOff || isHalf)
+      ? "฿0.00"
+      : "฿" + (ot * 50).toFixed(2),
 
-    date:dateValue,
-
-    startTime:
-    "08:00 AM",
-
-    endTime:endVal,
-
-    workHours:
-    isOff
-    ? 0
-    :
-    (
-      isHalf
-      ? 4
-      : hrs
-    ),
-
-    otHours:
-    (
-      isOff || isHalf
-    )
-    ? 0
-    : ot,
-
-    otPay:
-    (
-      isOff || isHalf
-    )
-    ? "฿0.00"
-    :
-    "฿" +
-    (
-      ot * 50
-    ).toFixed(2),
-
-    dailyPay:
-    isOff
-    ? "฿0.00"
-    :
-    (
-      isHalf
-      ? "฿200.00"
-      :
-      "฿" +
-      (
-        400 + ot * 50
-      ).toFixed(2)
-    )
+    dailyPay: isOff
+      ? "฿0.00"
+      : (isHalf
+        ? "฿200.00"
+        : "฿" + (400 + ot * 50).toFixed(2))
   };
 
-  let month =
-  document.getElementById(
-    "monthView"
-  ).value;
+  let allData =
+    JSON.parse(localStorage.getItem("kyoeData")) || [];
 
-  let saved =
-  localStorage.getItem(
-    getStorageKey(month)
-  );
-
-  let arr =
-  saved
-  ? JSON.parse(saved)
-  : [];
-
-  arr.unshift({
-
-    rowIndex:
-    Date.now(),
-
-    data:[
-
-      data.date,
-
-      data.startTime,
-
-      data.endTime,
-
-      data.workHours,
-
-      data.otHours,
-
-      data.otPay,
-
-      data.dailyPay
-    ]
-  });
+  allData.unshift(data);
 
   localStorage.setItem(
-
-    getStorageKey(month),
-
-    JSON.stringify(arr)
+    "kyoeData",
+    JSON.stringify(allData)
   );
 
   btn.disabled = false;
+  btn.innerText = "ADD RECORD";
 
-  btn.innerText =
-  "ADD RECORD";
-
-  showToast(
-    "သိမ်းပြီးပါပြီ"
-  );
+  showToast("သိမ်းဆည်းပြီးပါပြီ");
 
   loadData();
-}
+}      
+
+  
 
 function del(i){
 
