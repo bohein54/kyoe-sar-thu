@@ -520,30 +520,19 @@ function changePage(step){
 
 function saveData(){
 
-  const btn =
-  document.getElementById(
-    "addBtn"
-  );
+  const btn = document.getElementById("addBtn");
 
   btn.disabled = true;
-
-  btn.innerText =
-  "SAVING...";
+  btn.innerText = "SAVING...";
 
   let dateValue =
-  document.getElementById(
-    "date"
-  ).value;
+  document.getElementById("date").value;
 
   let startVal =
-  document.getElementById(
-    "startTime"
-  ).value;
+  document.getElementById("startTime").value;
 
   let endVal =
-  document.getElementById(
-    "endTime"
-  ).value;
+  document.getElementById("endTime").value;
 
   let map = {
     "05:00 PM":9,
@@ -554,8 +543,7 @@ function saveData(){
     "10:00 PM":14
   };
 
-  let hrs =
-  map[endVal] || 0;
+  let hrs = map[endVal] || 0;
 
   let isOff =
   endVal === "OFF DAY";
@@ -564,9 +552,7 @@ function saveData(){
   endVal === "12:00 PM";
 
   let ot =
-  hrs > 9
-  ? hrs - 9
-  : 0;
+  hrs > 9 ? hrs - 9 : 0;
 
   let dailyPay =
   isOff
@@ -581,7 +567,7 @@ function saveData(){
   new Date(dateValue)
   .toLocaleString(
     'en-US',
-    { month:'long' }
+    {month:'long'}
   )
   .toUpperCase();
 
@@ -595,7 +581,7 @@ function saveData(){
   ? JSON.parse(saved)
   : [];
 
-  // ✅ duplicate date check
+  // duplicate check
   let alreadyExists =
   arr.some(
     x => x.data[0] === dateValue
@@ -609,24 +595,18 @@ function saveData(){
     );
 
     btn.disabled = false;
-
-    btn.innerText =
-    "ADD RECORD";
+    btn.innerText = "ADD RECORD";
 
     return;
   }
 
   let newItem = {
 
-    rowIndex:
-    Date.now(),
+    rowIndex: Date.now(),
 
     data:[
-
       dateValue,
-
       startVal,
-
       endVal,
 
       isOff
@@ -642,9 +622,7 @@ function saveData(){
       : ot,
 
       "฿" +
-      (
-        ot * 50
-      ).toFixed(2),
+      (ot * 50).toFixed(2),
 
       "฿" +
       dailyPay.toFixed(2)
@@ -654,20 +632,14 @@ function saveData(){
   arr.unshift(newItem);
 
   localStorage.setItem(
-
     getStorageKey(month),
-
     JSON.stringify(arr)
   );
 
   btn.disabled = false;
+  btn.innerText = "ADD RECORD";
 
-  btn.innerText =
-  "ADD RECORD";
-
-  showToast(
-    "သိမ်းဆည်းပြီးပါပြီ"
-  );
+  showToast("သိမ်းဆည်းပြီးပါပြီ");
 
   document.getElementById(
     "monthView"
