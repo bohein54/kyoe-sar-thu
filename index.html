@@ -130,7 +130,7 @@ tr:hover{
 
 </head>
 
-<body onload="initApp()">
+
 
 <!-- LOGIN -->
 
@@ -168,7 +168,7 @@ tr:hover{
 <!-- ENTRY -->
 
 
-<div id="entrySection">
+<div id="entrySection"> 
   <div class="bg-[#1c2541] p-5 rounded-2xl border border-gray-800">
     <label class="text-[10px] text-cyan-400 font-bold mb-1 block">DATE‌ရွှေးရန်</label>
     <input type="date" id="date" class="table-input mb-3">
@@ -201,9 +201,6 @@ tr:hover{
         <div id="resTotal" class="text-xl font-bold text-green-400">฿400.00</div>
       </div>
     </div>
-
-
-</div>
 
 <button
 id="addBtn"
@@ -361,22 +358,29 @@ function loadData(keepPage = false){
 
   let oldPage = currentPage;
 
-  google.script.run.withSuccessHandler(d=>{
+  let month =
+  document.getElementById(
+    "monthView"
+  ).value;
 
-    currentMonthData = d;
+  let saved =
+  localStorage.getItem(
+    getStorageKey(month)
+  );
 
-    // ✅ Edit လုပ်တဲ့အချိန် page မပြန်အောင်
-    if(keepPage){
-      currentPage = oldPage;
-    }else{
-      currentPage = 0;
-    }
+  currentMonthData =
+  saved
+  ? JSON.parse(saved)
+  : [];
 
-    renderTable();
+  if(keepPage){
+    currentPage = oldPage;
+  }else{
+    currentPage = 0;
+  }
 
-  }).getMonthData(document.getElementById("monthView").value);
+  renderTable();
 }
-
 function renderTable() {
   let tOt = 0, tPay = 0;
   let tbody = document.getElementById("dataTableBody");
@@ -423,7 +427,7 @@ function renderTable() {
         <span onclick="this.nextElementSibling.click()" style="cursor:pointer;">${r[0]}</span>
         <input type="date" value="${r[0]}" 
                style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
-               onchange="updateCell(${it.rowIndex}, '${it.sheetName}', 0, this.value)">
+               onchange="updateCell(${it.rowIndex}, 0, this.value)">
       </td>
 
       <!-- OT: Enter သို့မဟုတ် Space ခေါက်လိုက်လျှင် အော်တို သိမ်းပြီး အပြင်ထွက်ရန် -->
@@ -432,12 +436,12 @@ function renderTable() {
               inputmode="decimal"
               style="display:inline-block; min-width:25px; outline:none;"
               onkeypress="if(event.which==32 || event.which==13) { event.preventDefault(); this.blur(); return false; }"
-              onblur="updateCell(${it.rowIndex}, '${it.sheetName}', 4, this.innerText)">${r[4]}</span> hr
+              onblur="updateCell(${it.rowIndex}, 4, this.innerText)">${r[4]}</span> hr
       </td>
 
       <td style="padding:8px;">${payDisplay}</td>
       <td style="padding:8px;">
-        <button style="color:#ff4d6d" onclick="del(${it.rowIndex},'${it.sheetName}')">✕</button>
+        <button style="color:#ff4d6d" onclick="del(${it.rowIndex})">✕</button>
      </td>
     </tr>`;
   });
@@ -629,7 +633,7 @@ function saveData(){
     ]
   };
 
-  arr.unshift(newItem);
+  arr.push(newItem);
 
   localStorage.setItem(
     getStorageKey(month),
