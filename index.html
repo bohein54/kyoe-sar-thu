@@ -519,43 +519,159 @@ function changePage(step){
 
 
 function saveData(){
-  const btn = document.getElementById("addBtn");
+
+  const btn =
+  document.getElementById(
+    "addBtn"
+  );
+
   btn.disabled = true;
-  btn.innerText = "SAVING...";
 
-  // ✅ နာမည်ကို dateValue လို့ ပြောင်းလိုက်ပါ (id="date" နဲ့ မငြိအောင်လို့ပါ)
-  let dateValue = document.getElementById("date").value; 
-  let endVal = document.getElementById("endTime").value;
+  btn.innerText =
+  "SAVING...";
 
-  let map = {"05:00 PM":9, "06:00 PM":10, "07:00 PM":11, "08:00 PM":12, "09:00 PM":13, "10:00 PM":14};
-  let hrs = map[endVal] || 0;
-  let isOff = endVal === "OFF DAY";
-  let isHalf = endVal === "12:00 PM";
-  let ot = hrs > 9 ? hrs - 9 : 0;
+  let dateValue =
+  document.getElementById(
+    "date"
+  ).value;
 
-  let data={
-    date: dateValue, // ✅ ဒီနေရာမှာလည်း dateValue လို့ ပြောင်းပေးပါ
-    startTime: "08:00 AM",
-    endTime: endVal,
-    workHours: isOff ? 0 : (isHalf ? 4 : (hrs >= 9 ? hrs : 9)),
-    otHours: (isOff || isHalf) ? 0 : ot,
-    otPay: (isOff || isHalf) ? "฿0.00" : "฿" + (ot * 50).toFixed(2),
-    dailyPay: isOff ? "฿0.00" : (isHalf ? "฿200.00" : "฿" + (400 + ot * 50).toFixed(2))
+  let startVal =
+  document.getElementById(
+    "startTime"
+  ).value;
+
+  let endVal =
+  document.getElementById(
+    "endTime"
+  ).value;
+
+  let map = {
+    "05:00 PM":9,
+    "06:00 PM":10,
+    "07:00 PM":11,
+    "08:00 PM":12,
+    "09:00 PM":13,
+    "10:00 PM":14
   };
 
-  // ... (အပေါ်က ကုဒ်များ)
+  let hrs =
+  map[endVal] || 0;
+
+  let isOff =
+  endVal === "OFF DAY";
+
+  let isHalf =
+  endVal === "12:00 PM";
+
+  let ot =
+  hrs > 9
+  ? hrs - 9
+  : 0;
+
+  let dailyPay =
+  isOff
+  ? 0
+  : (
+      isHalf
+      ? 200
+      : 400 + ot * 50
+    );
+
+  let month =
+  new Date(dateValue)
+  .toLocaleString(
+    'en-US',
+    { month:'long' }
+  )
+  .toUpperCase();
+
+  let saved =
+  localStorage.getItem(
+    getStorageKey(month)
+  );
+
+  let arr =
+  saved
+  ? JSON.parse(saved)
+  : [];
+
+  // ✅ duplicate date check
+  let alreadyExists =
+  arr.some(
+    x => x.data[0] === dateValue
+  );
+
+  if(alreadyExists){
+
+    showToast(
+      "ဒီရက်စွဲရှိပြီးသား",
+      "error"
+    );
+
+    btn.disabled = false;
+
+    btn.innerText =
+    "ADD RECORD";
+
+    return;
+  }
+
+  let newItem = {
+
+    rowIndex:
+    Date.now(),
+
+    data:[
+
+      dateValue,
+
+      startVal,
+
+      endVal,
+
+      isOff
+      ? 0
+      : (
+          isHalf
+          ? 4
+          : hrs
+        ),
+
+      isOff || isHalf
+      ? 0
+      : ot,
+
+      "฿" +
+      (
+        ot * 50
+      ).toFixed(2),
+
+      "฿" +
+      dailyPay.toFixed(2)
+    ]
+  };
+
+  arr.unshift(newItem);
+
   localStorage.setItem(
-    "kyoeData",
-    JSON.stringify(allData)
+
+    getStorageKey(month),
+
+    JSON.stringify(arr)
   );
 
   btn.disabled = false;
-  btn.innerText = "ADD RECORD";
 
-  showToast("သိမ်းဆည်းပြီးပါပြီ");
+  btn.innerText =
+  "ADD RECORD";
 
-  // 🛠️ ပြင်ရမည့်နေရာ: လက်ရှိရွေးထားတဲ့ လကို MonthView dropdown ထဲ ပြန်ထည့်ပေးရန်
-  document.getElementById("monthView").value = new Date(data.date).toLocaleString('en-US', { month: 'long' }).toUpperCase();
+  showToast(
+    "သိမ်းဆည်းပြီးပါပြီ"
+  );
+
+  document.getElementById(
+    "monthView"
+  ).value = month;
 
   loadData();
 }
