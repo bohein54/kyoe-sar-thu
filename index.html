@@ -224,125 +224,41 @@ LIST
 
 <!-- ENTRY -->
 
+
 <div id="entrySection">
+  <div class="bg-[#1c2541] p-5 rounded-2xl border border-gray-800">
+    <label class="text-[10px] text-cyan-400 font-bold mb-1 block">DATE‌ရွှေးရန်</label>
+    <input type="date" id="date" class="table-input mb-3">
 
-<div class="bg-[#1c2541]
-p-5 rounded-2xl">
+    <label class="text-[10px] text-cyan-400 font-bold mb-1 block">အလုပ်ဝင်ချိန်</label>
+    <select id="startTime" class="table-input mb-3" onchange="calculate()">
+      <option value="08:00 AM">08:00 AM</option>
+      <option value="OFF DAY">အလုပ်ပိတ်ရက်</option>
+    </select>
 
-<label class="text-[10px]
-text-cyan-400">
+    <label class="text-[10px] text-cyan-400 font-bold mb-1 block">အလုပ်ထွက်ချိန်</label>
+    <select id="endTime" class="table-input mb-4" onchange="calculate()">
+      <option value="05:00 PM">05:00 PM</option>
+      <option value="06:00 PM">06:00 PM</option>
+      <option value="07:00 PM">07:00 PM</option>
+      <option value="08:00 PM">08:00 PM</option>
+      <option value="09:00 PM">09:00 PM</option>
+      <option value="10:00 PM">10:00 PM</option>
+      <option value="12:00 PM">နေ့တဝက်</option>
+      <option value="OFF DAY">အလုပ်ပိတ်ရက်</option>
+    </select>
 
-DATE
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="bg-black/20 p-3 rounded-xl text-center">
+        <div class="text-[10px] text-gray-500">OT HOURS</div>
+        <div id="resOt" class="text-xl font-bold text-yellow-400">0 hr</div>
+      </div>
+      <div class="bg-black/20 p-3 rounded-xl text-center">
+        <div class="text-[10px] text-gray-500">DAILY PAY</div>
+        <div id="resTotal" class="text-xl font-bold text-green-400">฿400.00</div>
+      </div>
+    </div>
 
-</label>
-
-<input
-type="date"
-id="date"
-class="table-input mb-3">
-
-<label class="text-[10px]
-text-cyan-400">
-
-END TIME
-
-</label>
-
-<label class="text-[10px] text-cyan-400 font-bold mb-1 block">
-အလုပ်ဝင်ချိန်
-</label>
-
-<select id="startTime" class="table-input mb-3" onchange="calculate()">
-  <option value="08:00 AM">08:00 AM</option>
-  <option value="OFF DAY">အလုပ်ပိတ်ရက်</option>
-</select>
-  
-<select
-id="endTime"
-class="table-input mb-4"
-onchange="calculate()">
-
-<option value="05:00 PM">
-05:00 PM
-</option>
-
-<option value="06:00 PM">
-06:00 PM
-</option>
-
-<option value="07:00 PM">
-07:00 PM
-</option>
-
-<option value="08:00 PM">
-08:00 PM
-</option>
-
-<option value="09:00 PM">
-09:00 PM
-</option>
-
-<option value="10:00 PM">
-10:00 PM
-</option>
-
-<option value="12:00 PM">
-နေ့တဝက်
-</option>
-
-<option value="OFF DAY">
-OFF DAY
-</option>
-
-</select>
-
-<div class="grid
-grid-cols-2
-gap-3 mb-4">
-
-<div class="bg-black/20
-p-3 rounded-xl
-text-center">
-
-<div class="text-[10px]
-text-gray-500">
-
-OT HOURS
-
-</div>
-
-<div id="resOt"
-class="text-xl
-font-bold
-text-yellow-400">
-
-0 hr
-
-</div>
-
-</div>
-
-<div class="bg-black/20
-p-3 rounded-xl
-text-center">
-
-<div class="text-[10px]
-text-gray-500">
-
-DAILY PAY
-
-</div>
-
-<div id="resTotal"
-class="text-xl
-font-bold
-text-green-400">
-
-฿400.00
-
-</div>
-
-</div>
 
 </div>
 
