@@ -252,7 +252,7 @@ ADD RECORD
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: 1px;
-    text-shadow: 0px 0px 12pxpx rgba(225, 0, 0, 0.3);
+    text-shadow: 0px 0px 12px rgba(225, 0, 0, 0.3);
 ">
  ရက်စွဲ - (တွက်ချက်နေသည်...)
 </div>
@@ -408,8 +408,8 @@ function renderTable() {
 
     let otDisplay, payDisplay, rowStyle;
 
-    if (otValue === 0 && payValue === 0) {
-      otDisplay = "OFF";
+    if (r[2] === "OFF DAY" ) {
+      otDisplay = "OFF DAY";
       payDisplay = "အလုပ်ပိတ်ရက်";
       rowStyle = "color: #ffffff; font-style: normal;";
     } else {
@@ -633,7 +633,7 @@ function saveData(){
     ]
   };
 
-  arr.push(newItem);
+  arr.unshift(newItem);
 
   localStorage.setItem(
     getStorageKey(month),
@@ -860,5 +860,7 @@ async function exportPdf(){
   );
 }
 </script>
+<div id="toast" class="toast"></div>
+  
 </body>
 </html>
