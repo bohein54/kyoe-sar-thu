@@ -134,92 +134,35 @@ tr:hover{
 
 <!-- LOGIN -->
 
-<div id="loginPage"
-class="flex justify-center items-center h-screen">
+<body onload="initApp()">
 
-<div class="bg-[#1c2541]
-p-6 rounded-2xl
-w-80 border
-border-gray-700
-shadow-2xl">
-
+<div id="loginPage" class="flex justify-center items-center h-screen">
+  <div class="bg-[#1c2541] p-6 rounded-2xl w-80 border border-gray-700 shadow-2xl">
+    
 <div class="flex justify-center mb-4">
-
-<img
-src="https://i.postimg.cc/L473n1hp/Logo.png"
-class="w-24 h-24 rounded-full border-4 border-cyan-400 object-cover">
-
+  <img 
+    src="https://i.postimg.cc/L473n1hp/Logo.png"
+    class="w-24 h-24 rounded-full border-4 border-cyan-400 shadow-[0_0_25px_#2ec4b6] object-cover"
+    alt="logo"
+  >
 </div>
 
-<h2 class="text-center mb-2
-text-cyan-400 font-bold
-text-xl">
-
-WELCOME
-
-</h2>
-
-<p class="text-center
-text-gray-400 text-xs mb-4">
-
-Login to continue
-
-</p>
-
-<input
-id="username"
-class="table-input mb-4"
-value="Bo hein"
-readonly>
-
-<input
-id="password"
-type="password"
-class="table-input mb-4"
-placeholder="Password">
-
-<button
-onclick="checkLogin()"
-class="w-full
-bg-cyan-600
-p-3 rounded-xl
-font-bold">
-
-LOGIN
-
-</button>
-
+    <h2 class="text-center mb-2 text-cyan-400 font-bold text-xl tracking-widest">WELCOME</h2>
+<p class="text-center text-gray-400 text-xs mb-4">login ဝင်ရောက်ပေးပါ</p>
+    <input id="username" class="table-input mb-4" value="Bo hein" style="background:rgba(255,255,255,0.1); color:#aaa; pointer-events:none;" readonly>
+    <input id="password" type="password" class="table-input mb-4" placeholder="Password">
+    <button onclick="checkLogin()" class="w-full bg-cyan-600 p-3 rounded-xl font-bold">LOGIN</button>
+    
+    <p class="text-center text-[10px] text-gray-500 mt-4 tracking-[2px]">DEVELOPER BY BO HEIN</p>
+  </div>
 </div>
 
-</div>
 
-<!-- MAIN -->
+<div id="mainApp" class="hidden p-3 max-w-4xl mx-auto">
 
-<div id="mainApp"
-class="hidden p-3 max-w-4xl mx-auto">
-
-<div class="flex mb-3
-bg-[#0b132b]
-rounded-t-xl overflow-hidden">
-
-<div
-onclick="showTab('entry')"
-class="nav-btn active"
-id="tab1">
-
-ENTRY
-
-</div>
-
-<div
-onclick="showTab('list')"
-class="nav-btn"
-id="tab2">
-
-LIST
-
-</div>
-
+<div class="flex mb-3 bg-[#0b132b] rounded-t-xl overflow-hidden">
+  <div onclick="showTab('entry')" id="tab1" class="nav-btn active">ENTRY</div>
+  <div onclick="showTab('list')" id="tab2" class="nav-btn">LIST</div>
 </div>
 
 <!-- ENTRY -->
@@ -273,189 +216,87 @@ font-bold">
 ADD RECORD
 
 </button>
-
+<p class="text-center text-[10px] text-gray-500 mt-6 tracking-[2px]">DEVELOPER BY BO HEIN</p>
 </div>
 
 </div>
 
 <!-- LIST -->
 
-<div id="listSection"
-style="display:none;">
+<div id="listSection" style="display:none;">
 
-<div class="flex
-justify-between
-items-center mb-3">
+<div id="pdfArea">
+   <!-- summary + table only -->
 
-<select
-id="monthView"
-onchange="loadData()"
-class="table-input w-40">
-
-</select>
-
-<button
-onclick="exportPdf()"
-class="bg-blue-600
-px-4 py-2
-rounded-lg">
-
-PDF
-
-</button>
-
+<div class="flex justify-between items-center mb-3">
+  <select id="monthView" onchange="loadData()"></select>
+  <button onclick="exportPdf()" class="bg-blue-600 px-4 py-2 rounded-lg font-bold text-sm">PDF</button>
 </div>
 
-<div class="bg-black/20
-p-4 rounded-xl mb-4
-flex justify-between">
+<div style="display: flex; justify-content: space-between; align-items: center; background: rgba(17, 24, 39, 0.4); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #1f2937;">
+  
+  <div style="text-align: left; display: flex; flex-direction: column;">
+    <span style="font-size: 10px; color: #9ca3af;">၁၄ရက်OTရချိန်</span>
+    <span id="total14Ot" style="color: #facc15; font-weight: bold; font-size: 18px;">0 hr</span>
+  </div>
 
-<div>
+  <div style="text-align: right; display: flex; flex-direction: column;">
+    <span style="font-size: 10px; color: #9ca3af;">၁၄ရက်စာပေါင်း</span>
+    <span id="total14Pay" style="color: #facc15; font-weight: bold; font-size: 18px;">฿0.00</span>
+  </div>
+  </div>
 
-<div class="text-[10px]
-text-gray-400">
-
-OT TOTAL
-
+<div id="dateRangeDisplay" style="
+    text-align: center; 
+    font-size: 14px; 
+    font-weight: 800; 
+    margin: 20px 0 15px 0; 
+    background: linear-gradient(to right, #e80000, #facc15 , #ff8fa3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+    text-shadow: 0px 0px 12pxpx rgba(225, 0, 0, 0.3);
+">
+ ရက်စွဲ - (တွက်ချက်နေသည်...)
 </div>
 
-<div id="total14Ot"
-class="text-yellow-400
-font-bold text-xl">
-
-0 hr
-
-</div>
-
-</div>
-
-<div class="text-right">
-
-<div class="text-[10px]
-text-gray-400">
-
-PAY TOTAL
-
-</div>
-
-<div id="total14Pay"
-class="text-green-400
-font-bold text-xl">
-
-฿0.00
-
-</div>
-
-</div>
-
-</div>
-
-<div id="dateRangeDisplay"
-class="text-center
-font-bold mb-4
-text-cyan-400">
-
-DATE RANGE
-
-</div>
-
-<div class="table-container
-border border-gray-800"
+<div class="table-container border border-gray-800"
 style="position:relative;"
 ondblclick="handleTableDoubleClick()">
-
-<table class="w-full
-text-center text-[12px]">
-
-<thead class="bg-[#0b132b]
-text-gray-400">
-
-<tr>
-
-<th class="p-3">
-DATE
-</th>
-
-<th class="p-3">
-OT
-</th>
-
-<th class="p-3">
-PAY
-</th>
-
-<th class="p-3">
-DEL
-</th>
-
-</tr>
-
-</thead>
-
-<tbody id="dataTableBody">
-
-</tbody>
-
-</table>
-
-<div id="tableLockOverlay"
+  <table class="w-full text-center text-[12px]">
+    <thead class="bg-[#0b132b] text-gray-400">
+      <tr>
+        <th class="p-3 border-b border-gray-700">DATE</th>
+        <th class="p-3 border-b border-gray-700">OT</th>
+        <th class="p-3 border-b border-gray-700">PAY</th>
+        <th class="p-3 border-b border-gray-700">DEL</th>
+      </tr>
+    </thead>
+    <tbody id="dataTableBody"></tbody>
+  </table>
+  <div id="tableLockOverlay"
 class="lock-overlay"
 style="display:none;">
 
-<div class="lock-icon">
-
-🔒
-
-</div>
+  <div class="lock-icon">
+    🔒
+  </div>
 
 </div>
-
+</div>
 </div>
 
-<div class="flex
-justify-between
-items-center mt-4">
-
-<button
-id="prevBtn"
-onclick="changePage(-1)"
-class="bg-gray-700
-px-4 py-2
-rounded-lg">
-
-BACK
-
-</button>
-
-<span id="pageInfo">
-
-PAGE 1
-
-</span>
-
-<button
-id="nextBtn"
-onclick="changePage(1)"
-class="bg-gray-700
-px-4 py-2
-rounded-lg">
-
-NEXT
-
-</button>
-
+<div class="flex justify-between items-center mt-4">
+  <button id="prevBtn" onclick="changePage(-1)" class="bg-gray-700 px-4 py-2 rounded-lg text-[10px] font-bold disabled:opacity-30">အနောက်သို့</button>
+  <span id="pageInfo" class="text-cyan-400 font-bold text-[11px]"></span>
+  <button id="nextBtn" onclick="changePage(1)" class="bg-gray-700 px-4 py-2 rounded-lg text-[10px] font-bold disabled:opacity-30">အရှေ့သို့</button>
+</div>
+<div class="text-center mt-6 pb-4">
+  <p class="text-[10px] text-gray-500 tracking-[2px]">DEVELOPER BY BO HEIN</p>
+</div>
 </div>
 
-</div>
-
-</div>
-
-<div id="toast"
-class="toast">
-
-DONE
-
-</div>
+</div>   
 
 <script>
 let isLockedBySystem = true;
@@ -468,365 +309,154 @@ function getStorageKey(month){
 }
 
 function initApp(){
-
-  let m = [
-    "JANUARY",
-    "FEBRUARY",
-    "MARCH",
-    "APRIL",
-    "MAY",
-    "JUNE",
-    "JULY",
-    "AUGUST",
-    "SEPTEMBER",
-    "OCTOBER",
-    "NOVEMBER",
-    "DECEMBER"
-  ];
-
-  let monthView =
-  document.getElementById("monthView");
-
+  let m=["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
+  let monthView = document.getElementById("monthView");
   m.forEach(x=>{
-
-    let o =
-    document.createElement("option");
-
-    o.value = x;
-    o.text = x;
-
-    monthView.appendChild(o);
+    let o=document.createElement("option");
+    o.value=x; o.text=x; monthView.appendChild(o);
   });
-
-  monthView.value =
-  m[new Date().getMonth()];
-
-  document.getElementById("date").value =
-  new Date().toISOString().split('T')[0];
+  monthView.value=m[new Date().getMonth()];
+  document.getElementById("date").value=new Date().toISOString().split('T')[0];
 }
 
 function checkLogin(){
-
-  let user =
-  document.getElementById("username").value;
-
-  let pass =
-  document.getElementById("password").value;
-
-  if(
-    user === "Bo hein" &&
-    pass === "000000"
-  ){
-
-    document.getElementById(
-      "loginPage"
-    ).style.display = "none";
-
-    document.getElementById(
-      "mainApp"
-    ).style.display = "block";
-
+  let user = document.getElementById("username").value;
+  let pass = document.getElementById("password").value;
+  
+  if(user === "Bo hein" && pass === "000000"){
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("mainApp").style.display="block";
     loadData();
-
-  }else{
-
-    showToast(
-      "Password မှားနေပါတယ်",
-      "error"
-    );
+  } else {
+    showToast("Password မှားနေပါတယ် ပြန်လည်စီစစ်ပေးပါဗျာ","error");
   }
 }
 
 function showTab(t){
-
-  document.getElementById(
-    "entrySection"
-  ).style.display =
-  t === "entry"
-  ? "block"
-  : "none";
-
-  document.getElementById(
-    "listSection"
-  ).style.display =
-  t === "list"
-  ? "block"
-  : "none";
+  document.getElementById("entrySection").style.display = t === "entry" ? "block" : "none";
+  document.getElementById("listSection").style.display = t === "list" ? "block" : "none";
 }
 
 function calculate(){
-
-  let endTime =
-  document.getElementById(
-    "endTime"
-  ).value;
-
-  let resOt =
-  document.getElementById(
-    "resOt"
-  );
-
-  let resTotal =
-  document.getElementById(
-    "resTotal"
-  );
+  let endTime = document.getElementById("endTime").value;
+  let resOt = document.getElementById("resOt");
+  let resTotal = document.getElementById("resTotal");
 
   if(endTime === "OFF DAY"){
-
-    resOt.innerText = "0 hr";
-
-    resTotal.innerText = "฿0.00";
-
-    return;
+    resOt.innerText="0 hr"; resTotal.innerText="฿0.00"; return;
   }
-
   if(endTime === "12:00 PM"){
-
-    resOt.innerText = "0 hr";
-
-    resTotal.innerText = "฿200.00";
-
-    return;
+    resOt.innerText="0 hr"; resTotal.innerText="฿200.00"; return;
   }
 
-  let map = {
+  let map = {"05:00 PM":9, "06:00 PM":10, "07:00 PM":11, "08:00 PM":12, "09:00 PM":13, "10:00 PM":14};
+  let hrs = map[endTime] || 9;
+  let ot = hrs > 9 ? hrs - 9 : 0;
 
-    "05:00 PM":9,
-    "06:00 PM":10,
-    "07:00 PM":11,
-    "08:00 PM":12,
-    "09:00 PM":13,
-    "10:00 PM":14
-
-  };
-
-  let hrs =
-  map[endTime] || 9;
-
-  let ot =
-  hrs > 9
-  ? hrs - 9
-  : 0;
-
-  resOt.innerText =
-  ot + " hr";
-
-  resTotal.innerText =
-  "฿" +
-  (400 + ot * 50).toFixed(2);
+  resOt.innerText = ot + " hr";
+  resTotal.innerText = "฿" + (400 + ot * 50).toFixed(2);
 }
 
-function loadData(
-  keepPage = false
-){
+function loadData(keepPage = false){
 
-  let oldPage =
-  currentPage;
+  let oldPage = currentPage;
 
-  let month =
-  document.getElementById(
-    "monthView"
-  ).value;
+  google.script.run.withSuccessHandler(d=>{
 
-  let saved =
-  localStorage.getItem(
-    getStorageKey(month)
-  );
+    currentMonthData = d;
 
-  currentMonthData =
-  saved
-  ? JSON.parse(saved)
-  : [];
-
-  if(keepPage){
-
-    currentPage =
-    oldPage;
-
-  }else{
-
-    currentPage = 0;
-  }
-
-  renderTable();
-}
-
-function renderTable(){
-
-  let tOt = 0;
-  let tPay = 0;
-
-  let tbody =
-  document.getElementById(
-    "dataTableBody"
-  );
-
-  tbody.innerHTML = "";
-
-  let start =
-  currentPage * 14;
-
-  let page =
-  currentMonthData.slice(
-    start,
-    start + 14
-  );
-
-  if(page.length > 0){
-
-    let firstDate =
-    page[0].data[0];
-
-    let lastDate =
-    page[
-      page.length - 1
-    ].data[0];
-
-    document.getElementById(
-      "dateRangeDisplay"
-    ).innerHTML =
-    firstDate +
-    " ➔ " +
-    lastDate;
-  }
-
-  page.forEach(it=>{
-
-    let r = it.data;
-
-    let otValue =
-    parseFloat(r[4]) || 0;
-
-    let payStr =
-    r[6]
-    ? r[6].toString()
-    : "0";
-
-    let payValue =
-    parseFloat(
-      payStr.replace("฿","")
-    ) || 0;
-
-    let payDisplay;
-
-    if(
-      otValue === 0 &&
-      payValue === 0
-    ){
-
-      payDisplay =
-      "OFF DAY";
-
+    // ✅ Edit လုပ်တဲ့အချိန် page မပြန်အောင်
+    if(keepPage){
+      currentPage = oldPage;
     }else{
-
-      tOt += otValue;
-
-      tPay += payValue;
-
-      payDisplay = r[6];
+      currentPage = 0;
     }
 
-    tbody.innerHTML += `
+    renderTable();
 
-<tr
-style="
-border-bottom:
-1px solid #2ec4b6;
-">
+  }).getMonthData(document.getElementById("monthView").value);
+}
 
-<td style="padding:8px;">
+function renderTable() {
+  let tOt = 0, tPay = 0;
+  let tbody = document.getElementById("dataTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
 
-${r[0]}
+  let start = currentPage * 14;
+  let page = currentMonthData.slice(start, start + 14);
+ 
+// ✅ မျဉ်းနီတားထားတဲ့နေရာမှာ ရက်စွဲပြရန် တွက်ချက်ခြင်း
+  if (page.length > 0) {
+  let firstDate = page[0].data[0];
+  let lastDate = page[page.length - 1].data[0];
+  
+  // ရက်စွဲကြားမှာ မြှားပုံစံလေးနဲ့ ပိုလှအောင် လုပ်ထားပါတယ်
+  document.getElementById("dateRangeDisplay").innerHTML = 
+    "  " + firstDate + " <span style='-webkit-text-fill-color: #9ca3af;'>➔</span> " + lastDate;
+}
 
-</td>
+  page.forEach(it => {
+    let r = it.data;
+    let otValue = parseFloat(r[4]) || 0;
+    let payStr = r[6] ? r[6].toString() : "0";
+    let payValue = parseFloat(payStr.replace('฿', '').replace(',', '')) || 0;
 
-<td style="padding:8px;">
+    let otDisplay, payDisplay, rowStyle;
 
-<span
-contenteditable="true"
+    if (otValue === 0 && payValue === 0) {
+      otDisplay = "OFF";
+      payDisplay = "အလုပ်ပိတ်ရက်";
+      rowStyle = "color: #ffffff; font-style: normal;";
+    } else {
+      tOt += otValue;
+      tPay += payValue;
+      otDisplay = r[4] + " hr";
+      payDisplay = r[6];
+      rowStyle = "color: #facc15; font-weight: bold;";
+    }
 
-onblur="
-updateCell(
-${it.rowIndex},
-4,
-this.innerText
-)
-">
+   tbody.innerHTML += `
+    <tr style="border-bottom:1px solid #2ec4b6; ${rowStyle}">
+      <!-- Date: စာသားကို နှိပ်ရင် Date Picker ပေါ်ရန် -->
+      <td style="padding:8px; position:relative;">
+        <span onclick="this.nextElementSibling.click()" style="cursor:pointer;">${r[0]}</span>
+        <input type="date" value="${r[0]}" 
+               style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
+               onchange="updateCell(${it.rowIndex}, '${it.sheetName}', 0, this.value)">
+      </td>
 
-${r[4]}
+      <!-- OT: Enter သို့မဟုတ် Space ခေါက်လိုက်လျှင် အော်တို သိမ်းပြီး အပြင်ထွက်ရန် -->
+      <td style="padding:8px;">
+        <span contenteditable="true" 
+              inputmode="decimal"
+              style="display:inline-block; min-width:25px; outline:none;"
+              onkeypress="if(event.which==32 || event.which==13) { event.preventDefault(); this.blur(); return false; }"
+              onblur="updateCell(${it.rowIndex}, '${it.sheetName}', 4, this.innerText)">${r[4]}</span> hr
+      </td>
 
-</span> hr
-
-</td>
-
-<td style="padding:8px;">
-
-${payDisplay}
-
-</td>
-
-<td style="padding:8px;">
-
-<button
-style="color:#ff4d6d"
-
-onclick="
-del(${it.rowIndex})
-">
-
-✕
-
-</button>
-
-</td>
-
-</tr>
-
-`;
+      <td style="padding:8px;">${payDisplay}</td>
+      <td style="padding:8px;">
+        <button style="color:#ff4d6d" onclick="del(${it.rowIndex},'${it.sheetName}')">✕</button>
+     </td>
+    </tr>`;
   });
 
-  document.getElementById(
-    "total14Ot"
-  ).innerText =
-  tOt + " hr";
+  document.getElementById("total14Ot").innerText = tOt + " hr";
+  document.getElementById("total14Pay").innerText = "฿" + tPay.toFixed(2);
 
-  document.getElementById(
-    "total14Pay"
-  ).innerText =
-  "฿" +
-  tPay.toFixed(2);
+  // စာမျက်နှာ အချက်အလက်
+  document.getElementById("pageInfo").innerText = "PAGE " + (currentPage + 1) + "  (" + page.length + " ခု)";
 
-  document.getElementById(
-    "pageInfo"
-  ).innerText =
-  "PAGE " +
-  (currentPage + 1);
-
-  document.getElementById(
-    "prevBtn"
-  ).disabled =
-  currentPage === 0;
-
-  document.getElementById(
-    "nextBtn"
-  ).disabled =
-  (
-    (
-      currentPage + 1
-    ) * 14
-    >=
-    currentMonthData.length
-  );
-
+  document.getElementById("prevBtn").disabled = (currentPage === 0);
+  document.getElementById("nextBtn").disabled = ((currentPage + 1) * 14 >= currentMonthData.length);
   applyLockUI();
 }
 
 function applyLockUI(){
 
   let lockOverlay =
-  document.getElementById(
-    "tableLockOverlay"
-  );
+  document.getElementById("tableLockOverlay");
 
   if(!lockOverlay) return;
 
@@ -836,25 +466,17 @@ function applyLockUI(){
     currentPage * 14 + 14
   );
 
-  if(
-    currentPageData.length >= 14
-  ){
+  // ၁၄ရက်ပြည့်မှ lock ခတ်
+  if(currentPageData.length >= 14){
 
     if(isLockedBySystem){
-
-      lockOverlay.style.display =
-      "flex";
-
+      lockOverlay.style.display = "flex";
     }else{
-
-      lockOverlay.style.display =
-      "none";
+      lockOverlay.style.display = "none";
     }
 
   }else{
-
-    lockOverlay.style.display =
-    "none";
+    lockOverlay.style.display = "none";
   }
 }
 
@@ -866,44 +488,29 @@ function handleTableDoubleClick(){
     currentPage * 14 + 14
   );
 
-  if(
-    currentPageData.length < 14
-  ) return;
+  // ၁၄ရက်မပြည့်ရင် မခတ်
+  if(currentPageData.length < 14) return;
 
-  isLockedBySystem =
-  !isLockedBySystem;
+  isLockedBySystem = !isLockedBySystem;
 
   applyLockUI();
 
   if(isLockedBySystem){
-
-    showToast(
-      "lock ခတ်လိုက်ပါပြီ",
-      "error"
-    );
-
+    showToast("lock ခတ်လိုက်ပါပြီ","error");
   }else{
-
-    showToast(
-      "lock ဖြုတ်ပြီးပါပြီ"
-    );
+    showToast("Lock ဖြုတ်ပြီးပါပြီ");
   }
 }
 
 function changePage(step){
 
   let maxPage =
-  Math.ceil(
-    currentMonthData.length / 14
-  ) - 1;
+  Math.ceil(currentMonthData.length / 14) - 1;
 
   currentPage += step;
 
-  if(currentPage < 0)
-  currentPage = 0;
-
-  if(currentPage > maxPage)
-  currentPage = maxPage;
+  if(currentPage < 0) currentPage = 0;
+  if(currentPage > maxPage) currentPage = maxPage;
 
   isLockedBySystem = true;
 
@@ -916,60 +523,34 @@ function saveData(){
   btn.disabled = true;
   btn.innerText = "SAVING...";
 
-  let dateValue = document.getElementById("date").value;
-  let startVal = document.getElementById("startTime").value;
+  // ✅ နာမည်ကို dateValue လို့ ပြောင်းလိုက်ပါ (id="date" နဲ့ မငြိအောင်လို့ပါ)
+  let dateValue = document.getElementById("date").value; 
   let endVal = document.getElementById("endTime").value;
 
-  let map = {
-    "05:00 PM":9,
-    "06:00 PM":10,
-    "07:00 PM":11,
-    "08:00 PM":12,
-    "09:00 PM":13,
-    "10:00 PM":14
-  };
-
+  let map = {"05:00 PM":9, "06:00 PM":10, "07:00 PM":11, "08:00 PM":12, "09:00 PM":13, "10:00 PM":14};
   let hrs = map[endVal] || 0;
-
   let isOff = endVal === "OFF DAY";
   let isHalf = endVal === "12:00 PM";
-
   let ot = hrs > 9 ? hrs - 9 : 0;
 
-  let data = {
-    date: dateValue,
-    startTime: startVal,
+  let data={
+    date: dateValue, // ✅ ဒီနေရာမှာလည်း dateValue လို့ ပြောင်းပေးပါ
+    startTime: "08:00 AM",
     endTime: endVal,
-    workHours: isOff ? 0 : (isHalf ? 4 : hrs),
+    workHours: isOff ? 0 : (isHalf ? 4 : (hrs >= 9 ? hrs : 9)),
     otHours: (isOff || isHalf) ? 0 : ot,
-    otPay: (isOff || isHalf)
-      ? "฿0.00"
-      : "฿" + (ot * 50).toFixed(2),
-
-    dailyPay: isOff
-      ? "฿0.00"
-      : (isHalf
-        ? "฿200.00"
-        : "฿" + (400 + ot * 50).toFixed(2))
+    otPay: (isOff || isHalf) ? "฿0.00" : "฿" + (ot * 50).toFixed(2),
+    dailyPay: isOff ? "฿0.00" : (isHalf ? "฿200.00" : "฿" + (400 + ot * 50).toFixed(2))
   };
 
-  let allData =
-    JSON.parse(localStorage.getItem("kyoeData")) || [];
-
-  allData.unshift(data);
-
-  localStorage.setItem(
-    "kyoeData",
-    JSON.stringify(allData)
-  );
-
-  btn.disabled = false;
-  btn.innerText = "ADD RECORD";
-
-  showToast("သိမ်းဆည်းပြီးပါပြီ");
-
-  loadData();
-}      
+  google.script.run.withSuccessHandler(m=>{
+    btn.disabled = false; 
+    btn.innerText = "ADD RECORD";
+    showToast("သိမ်းဆည်းပြီးပါပြီ ခင်ဗျာ။");
+    document.getElementById("monthView").value = m;
+    loadData();
+  }).addKYOESARTHU(data);
+}   
 
   
 
