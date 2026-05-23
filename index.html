@@ -24,16 +24,18 @@ content="#0b132b">
 
 <script src="https://cdn.tailwindcss.com"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <script>
 const supabaseUrl = "https://znoibglgaslffrbvhpqa.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpub2liZ2xnYXNsZmZyYnZocHFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTQ4NTAsImV4cCI6MjA5NDk3MDg1MH0.UCPwj9lepDzn1IKxlqIDEv_3S2LNxCtjUq9-txzmfnQ";
 
-const supabaseClient=
-supabase.createClient(
+
+const { createClient } = supabase;
+
+const supabaseClient = createClient(
   supabaseUrl,
   supabaseKey
 );
@@ -641,7 +643,7 @@ async function saveData(){
 
   // duplicate check
   const { data: oldData } =
-  await supabase
+  await supabaseClient
     .from("salary_data")
     .select("*")
     .eq("data", dateValue);
