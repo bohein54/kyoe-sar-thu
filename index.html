@@ -697,18 +697,19 @@ async function saveData(){
   btn.disabled = false;
   btn.innerText = "ADD RECORD";
 
-  if(error){
+ if(error){
 
-    showToast(
-      "Save မအောင်မြင်",
-      "error"
-    );
+  console.log(error);
 
-    console.log(error);
+  alert(JSON.stringify(error));
 
-    return;
-  }
+  showToast(
+    "Database Save Error",
+    "error"
+  );
 
+  return;
+}
   showToast("သိမ်းဆည်းပြီးပါပြီ");
 
   loadData();
