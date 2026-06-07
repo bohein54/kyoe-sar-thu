@@ -413,38 +413,30 @@ showToast(
 async function loginAccount(){
 
 let email =
-document.getElementById(
-"userEmail"
-).value;
+document.getElementById("userEmail").value;
 
 let password =
-document.getElementById(
-"userPassword"
-).value;
+document.getElementById("userPassword").value;
 
 const { error } =
 await supabaseClient.auth.signInWithPassword({
-
 email,
 password
-
 });
 
 if(error){
 
-showToast(
-error.message,
-"error"
-);
+alert(error.message);
+console.log(error);
+
+showToast(error.message,"error");
 
 return;
 }
 
-showToast(
-"Login Success"
-);
+showToast("Login Success");
 
-}  
+}
   
 function checkLogin(){
   let user = document.getElementById("username").value;
