@@ -181,8 +181,8 @@ tr:hover{
 
 <body onload="initApp()">
   
-<div id="loginPage" class="flex justify-center items-center h-screen bg-gradient-to-br from-[#0b132b] to-[#1c2541] p-4">
-  <div class="bg-gradient-to-b from-[#1e293b] to-[#0f172a] p-6 rounded-2xl w-85 border border-white/10 shadow-2xl backdrop-blur-md">
+<div id="loginPage" class="flex justify-center items-center h-screen">
+  <div class="bg-[#1c2541] p-6 rounded-2xl w-80 border border-gray-700 shadow-2xl">
     
     <div class="flex justify-center mb-4">
       <img 
@@ -192,19 +192,13 @@ tr:hover{
       >
     </div>
 
-    <h2 class="text-center mb-1 text-cyan-400 font-extrabold text-2xl tracking-widest">WELCOME</h2>
-    <p class="text-center text-gray-400 text-xs mb-5">ကျေးဇူးပြု၍ အကောင့်ဝင်ရောက်ပေးပါ</p>
+    <h2 class="text-center mb-2 text-cyan-400 font-bold text-xl tracking-widest">WELCOME</h2>
+    <p class="text-center text-gray-400 text-xs mb-4">login ဝင်ရောက်ပေးပါ</p>
+    <input id="username" class="table-input mb-4" value="Bo hein" style="background:rgba(255,255,255,0.1); color:#aaa; pointer-events:none;" readonly>
+    <input id="password" type="password" class="table-input mb-4" placeholder="Password">
+    <button onclick="checkLogin()" class="w-full bg-cyan-600 p-3 rounded-xl font-bold">LOGIN</button>
     
-    <div class="space-y-3">
-      <input id="mainEmail" type="email" class="table-input" placeholder="Email (အီးမေးလ်လိပ်စာ)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
-      <input id="mainPassword" type="password" class="table-input" placeholder="Password (စကားဝှက်)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
-    </div>
-
-    <button onclick="checkMainLogin()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold mt-5 shadow-lg shadow-cyan-900/40 transition-all">
-      LOGIN
-    </button>
-    
-    <p class="text-center text-[10px] text-gray-500 mt-6 tracking-[2px]">DEVELOPER BY BO HEIN</p>
+    <p class="text-center text-[10px] text-gray-500 mt-4 tracking-[2px]">DEVELOPER BY BO HEIN</p>
   </div>
 </div>
 
@@ -383,36 +377,16 @@ function getStorageKey(month){
 function initApp(){
   let m=["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
   let monthView = document.getElementById("monthView");
+  if(monthView) monthView.innerHTML = "";
   m.forEach(x=>{
     let o=document.createElement("option");
     o.value=x; o.text=x; monthView.appendChild(o);
   });
-  monthView.value=m[new Date().getMonth()];
-  document.getElementById("date").value=new Date().toISOString().split('T')[0];
-}
-supabaseClient.auth.onAuthStateChange(
-  async (event, session)=>{
-    if(session){
-      document.getElementById("accountStatus").innerHTML = "✅ Account Login ဝင်ထားသည်";
-      document.getElementById("accountEmail").innerHTML = session.user.email;
-      document.getElementById("authInputs").style.display = "none";
-      
-      // Login ဝင်ထားရင် ဒေတာဆွဲတင်မယ်
-      loadData();
-    } else {
-      document.getElementById("accountStatus").innerHTML = "❌ Account Login မဝင်ထားပါ";
-      document.getElementById("accountEmail").innerHTML = "";
-      document.getElementById("authInputs").style.display = "block";
-      
-      // Logout ဖြစ်သွားရင် မျက်နှာပြင်က ဒေတာတွေအကုန် ရှင်းပစ်မယ်
-      currentMonthData = [];
-      const tbody = document.getElementById("dataTableBody");
-      if (tbody) tbody.innerHTML = "";
-      if (document.getElementById("total14Ot")) document.getElementById("total14Ot").innerText = "0 hr";
-      if (document.getElementById("total14Pay")) document.getElementById("total14Pay").innerText = "฿0.00";
-    }
+  if(monthView) monthView.value=m[new Date().getMonth()];
+  if(document.getElementById("date")) {
+    document.getElementById("date").value=new Date().toISOString().split('T')[0];
   }
-);
+}
   
 async function registerAccount(){
 
@@ -541,35 +515,32 @@ closeProfile();
 
 }
   
-async function checkMainLogin(){
-  let email = document.getElementById("mainEmail").value.trim();
-  let password = document.getElementById("mainPassword").value.trim();
+function checkLogin(){
+  let user = document.getElementById("username").value;
+  let pass = document.getElementById("password").value;
 
-  if(!email || !password) {
-    showToast("Email နှင့် Password ဖြည့်စွက်ပေးပါ", "error");
-    return;
+  if(user === "Bo hein" && pass === "000000"){
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("mainApp").classList.remove("hidden");
+
+    // အထဲရောက်ရင် Supabase Login ရှိမရှိ စစ်ဆေးပြီး ဒေတာဆွဲပါမယ်
+    checkInitialAuth();
+  }else{
+    showToast("Password မှားနေပါတယ်", "error");
   }
+}
 
-  // Supabase စနစ်သုံးပြီး အကောင့်စစ်ဆေးခြင်း
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if(error){
-    // အကောင့်မှားရင် သို့မဟုတ် Password မှားရင် Noti ပြမည်
-    showToast("အီးမေးလ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည်", "error");
-    return;
+// အထဲရောက်ရင် အကောင့်ဝင်ထားပြီးသားလား ကြိုစစ်ပေးမည့် Function
+async function checkInitialAuth() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) {
+    loadData();
+  } else {
+    // အကောင့်မဝင်ရသေးရင် ဒေတာဇယားကို အလွတ်ပဲ ပြထားမယ်
+    currentMonthData = [];
+    renderTable();
+    // လူကြီးမင်းတို့ စိတ်ကြိုက် Profile ဖွင့်ခိုင်းချင်ရင် openProfile() ကို ဒီမှာ လှမ်းခေါ်နိုင်ပါတယ်
   }
-
-  // အကောင့်မှန်ရင် Welcome Page ကိုဖျောက်ပြီး App ထဲ ပေးဝင်မည်
-  document.getElementById("loginPage").style.display = "none";
-  document.getElementById("mainApp").classList.remove("hidden");
-
-  showToast("Login Success - ဝင်ရောက်မှု အောင်မြင်ပါသည်");
-  
-  // ဒေတာများ ဆွဲတင်မည်
-  loadData();
 }
 
 function showToast(message, type = "success") {
@@ -626,21 +597,21 @@ async function loadData(keepPage = false){
   let oldPage = currentPage;
   let month = document.getElementById("monthView").value;
 
-  // 1. လက်ရှိ Login ဝင်ထားတဲ့ User ရဲ့ အချက်အလက်ကို ယူမယ်
+  // လက်ရှိ Supabase အကောင့် ဝင်ထားသူကို စစ်မယ်
   const { data: { user } } = await supabaseClient.auth.getUser();
   
-  // အကယ်၍ Login မဝင်ရသေးရင် ဒေတာမဆွဲဘဲ ရပ်လိုက်မယ်
+  // အကောင့်မဝင်ရသေးရင် ဒေတာလုံးဝမဆွဲဘဲ ဇယားကို အလွတ်ပဲ ပြထားမယ် (Error မပြတော့ပါ)
   if (!user) {
     currentMonthData = [];
     renderTable();
     return;
   }
 
-  // 2. Database ထဲကနေ လက်ရှိ Login ဝင်ထားတဲ့သူရဲ့ ID (.eq("user_id", user.id)) နဲ့ပဲ ဒေတာကို စစ်ပြီးဆွဲမယ်
+  // အကောင့်ရှိမှ မိမိ user_id နဲ့ သက်ဆိုင်တဲ့ ဒေတာကို ဆွဲမယ်
   const { data, error } = await supabaseClient
     .from("salary_data")
     .select("*")
-    .eq("user_id", user.id) // 👈 ဒီလိုင်းလေးက အကောင့်တစ်ခုချင်းစီရဲ့ ဒေတာကို သီးသန့်ခွဲထုတ်ပေးတာပါ
+    .eq("user_id", user.id)
     .order("data", { ascending:true });
 
   if(error){
@@ -677,28 +648,47 @@ async function loadData(keepPage = false){
 
   renderTable();
 }
+
+  
 function renderTable() {
   let tOt = 0, tPay = 0;
   let tbody = document.getElementById("dataTableBody");
   if (!tbody) return;
   tbody.innerHTML = "";
 
-  let start = currentPage * 14;
-  currentMonthData.sort((a, b) =>
-  new Date(a.data[0]) - new Date(b.data[0])
-);
+  // 1. အကောင့်မဝင်ရသေးရင် LIST ဇယားထဲမှာ စာသားလေးပြပြီး ပေးသွားမည်
+  if (currentMonthData.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" style="padding: 40px 10px; color: #9ca3af; text-align: center; font-style: italic;">
+          🛈 ဒေတာများကြည့်ရှုရန် ပရိုဖိုင် (👤) တွင် အကောင့်ဝင်ပေးပါ
+        </td>
+      </tr>
+    `;
+    document.getElementById("total14Ot").innerText = "0 hr";
+    document.getElementById("total14Pay").innerText = "฿0.00";
+    document.getElementById("dateRangeDisplay").innerText = "ရက်စွဲ - (အကောင့်မဝင်ရသေးပါ)";
+    document.getElementById("pageInfo").innerText = "PAGE 1 (0 ခု)";
+    document.getElementById("prevBtn").disabled = true;
+    document.getElementById("nextBtn").disabled = true;
+    if(document.getElementById("tableLockOverlay")) {
+      document.getElementById("tableLockOverlay").style.display = "none";
+    }
+    return; // အောက်က ကုဒ်တွေကို ဆက်မလုပ်ဘဲ ဒီတင်ရပ်မည်
+  }
 
-let page = currentMonthData.slice(start, start + 14);
+  // 2. အကောင့်ဝင်ထားရင် ပုံမှန်အတိုင်း ဒေတာများ တွက်ချက်ပြသမည်
+  let start = currentPage * 14;
+  currentMonthData.sort((a, b) => new Date(a.data[0]) - new Date(b.data[0]));
+
+  let page = currentMonthData.slice(start, start + 14);
  
-// ✅ မျဉ်းနီတားထားတဲ့နေရာမှာ ရက်စွဲပြရန် တွက်ချက်ခြင်း
   if (page.length > 0) {
-  let firstDate = page[0].data[0];
-  let lastDate = page[page.length - 1].data[0];
-  
-  // ရက်စွဲကြားမှာ မြှားပုံစံလေးနဲ့ ပိုလှအောင် လုပ်ထားပါတယ်
-  document.getElementById("dateRangeDisplay").innerHTML = 
-    "  " + firstDate + " <span style='-webkit-text-fill-color: #9ca3af;'>➔</span> " + lastDate;
-}
+    let firstDate = page[0].data[0];
+    let lastDate = page[page.length - 1].data[0];
+    document.getElementById("dateRangeDisplay").innerHTML = 
+      "  " + firstDate + " <span style='-webkit-text-fill-color: #9ca3af;'>➔</span> " + lastDate;
+  }
 
   page.forEach(it => {
     let r = it.data;
@@ -720,36 +710,30 @@ let page = currentMonthData.slice(start, start + 14);
       rowStyle = "color: #facc15; font-weight: bold;";
     }
 
-   tbody.innerHTML += `
-<tr style="border-bottom:0.5px solid rgba(255,255,255,0.08); ${rowStyle}">
-      <!-- Date: စာသားကို နှိပ်ရင် Date Picker ပေါ်ရန် -->
-      <td style="padding:8px; position:relative;">
-        <span onclick="this.nextElementSibling.click()" style="cursor:pointer;">${r[0]}</span>
-        <input type="date" value="${r[0]}" 
-               style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
-               onchange="updateCell(${it.rowIndex}, 0, this.value)">
-      </td>
-
-      <!-- OT: Enter သို့မဟုတ် Space ခေါက်လိုက်လျှင် အော်တို သိမ်းပြီး အပြင်ထွက်ရန် -->
-      <td style="padding:8px;">
-        <span contenteditable="true" 
-              inputmode="decimal"
-              style="display:inline-block; min-width:25px; outline:none;"
-              onkeypress="if(event.which==32 || event.which==13) { event.preventDefault(); this.blur(); return false; }"
-              onblur="updateCell(${it.rowIndex}, 4, this.innerText)">${r[4]}</span> hr
-      </td>
-
-      <td style="padding:8px;">${payDisplay}</td>
-      <td style="padding:8px;">
-        <button style="color:#ff4d6d" onclick="del(${it.rowIndex})">✕</button>
-     </td>
-    </tr>`;
+    tbody.innerHTML += `
+      <tr style="border-bottom:0.5px solid rgba(255,255,255,0.08); ${rowStyle}">
+        <td style="padding:8px; position:relative;">
+          <span onclick="this.nextElementSibling.click()" style="cursor:pointer;">${r[0]}</span>
+          <input type="date" value="${r[0]}" 
+                 style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
+                 onchange="updateCell(${it.rowIndex}, 0, this.value)">
+        </td>
+        <td style="padding:8px;">
+          <span contenteditable="true" 
+                inputmode="decimal"
+                style="display:inline-block; min-width:25px; outline:none;"
+                onkeypress="if(event.which==32 || event.which==13) { event.preventDefault(); this.blur(); return false; }"
+                onblur="updateCell(${it.rowIndex}, 4, this.innerText)">${r[4]}</span> hr
+        </td>
+        <td style="padding:8px;">${payDisplay}</td>
+        <td style="padding:8px;">
+          <button style="color:#ff4d6d" onclick="del(${it.rowIndex})">✕</button>
+        </td>
+      </tr>`;
   });
 
   document.getElementById("total14Ot").innerText = tOt + " hr";
   document.getElementById("total14Pay").innerText = "฿" + tPay.toFixed(2);
-
-  // စာမျက်နှာ အချက်အလက်
   document.getElementById("pageInfo").innerText = "PAGE " + (currentPage + 1) + "  (" + page.length + " ခု)";
 
   document.getElementById("prevBtn").disabled = (currentPage === 0);
