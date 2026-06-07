@@ -140,17 +140,13 @@ tr:hover{
   left:50% !important;
   transform:translateX(-50%) !important;
 
-  z-index:99999999 !important;
-
-  background:#16a34a;
-  color:#fff;
-  padding:14px 24px;
-  border-radius:14px;
+  z-index:999999999 !important;
 
   opacity:0;
   pointer-events:none;
   transition:.3s;
 }
+
 .toast.show{
   opacity:1;
   top:35px;
@@ -360,6 +356,73 @@ function initApp(){
   document.getElementById("date").value=new Date().toISOString().split('T')[0];
 }
 
+async function registerAccount(){
+
+let email =
+document.getElementById(
+"userEmail"
+).value;
+
+let password =
+document.getElementById(
+"userPassword"
+).value;
+
+const { error } =
+await supabaseClient.auth.signUp({
+
+email,
+password
+
+});
+
+if(error){
+
+showToast(
+error.message,
+"error"
+);
+
+return;
+}
+
+showToast(
+"Account Created"
+);
+
+}
+
+
+
+
+
+async function loginAccount(){
+
+let email =
+document.getElementById("userEmail").value.trim();
+
+let password =
+document.getElementById("userPassword").value.trim();
+
+const { data, error } =
+await supabaseClient.auth.signInWithPassword({
+  email,
+  password
+});
+
+console.log("DATA =", data);
+console.log("ERROR =", error);
+
+if(error){
+  alert(error.message);
+  return;
+}
+
+showToast("Login Success");
+
+document.getElementById("accountModal").style.display="none";
+}
+  
 async function checkAccount(){
 
 const {
