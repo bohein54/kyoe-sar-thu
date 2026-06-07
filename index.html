@@ -189,43 +189,28 @@ tr:hover{
 
 <div id="mainApp" class="hidden p-3 max-w-4xl mx-auto">
 
+  <div style="position:fixed;top:15px;right:15px;z-index:999;">
+<button
+onclick="openProfile()"
+style="
+width:45px;
+height:45px;
+border-radius:50%;
+background:#2ec4b6;
+border:none;
+font-size:22px;
+cursor:pointer;">
+👤
+</button>
+</div>
+
 <div class="flex mb-3 bg-[#0b132b] rounded-t-xl overflow-hidden">
   <div onclick="showTab('entry')" id="tab1" class="nav-btn active">ENTRY</div>
   <div onclick="showTab('list')" id="tab2" class="nav-btn">LIST</div>
 </div>
 
 <!-- ENTRY -->
-<div class="bg-[#16213e] p-4 rounded-xl mb-4">
 
-<h3 class="text-cyan-400 font-bold mb-3">
-ACCOUNT
-</h3>
-
-<input
-id="userEmail"
-type="email"
-class="table-input mb-2"
-placeholder="Email">
-
-<input
-id="userPassword"
-type="password"
-class="table-input mb-2"
-placeholder="Password">
-
-<button
-onclick="registerAccount()"
-class="bg-green-600 w-full p-2 rounded-lg mb-2">
-REGISTER
-</button>
-
-<button
-onclick="loginAccount()"
-class="bg-blue-600 w-full p-2 rounded-lg">
-LOGIN
-</button>
-
-</div>
 
 <div id="entrySection"> 
   <div class="bg-[#1c2541] p-5 rounded-2xl border border-gray-800">
@@ -374,70 +359,83 @@ function initApp(){
   document.getElementById("date").value=new Date().toISOString().split('T')[0];
 }
 
-async function registerAccount(){
+async function checkAccount(){
 
-let email =
-document.getElementById(
-"userEmail"
-).value;
+const {
+  data: { user }
+} = await supabaseClient.auth.getUser();
 
-let password =
-document.getElementById(
-"userPassword"
-).value;
+if(user){
 
-const { error } =
-await supabaseClient.auth.signUp({
-
-email,
-password
-
-});
-
-if(error){
-
-showToast(
-error.message,
-"error"
+alert(
+"Login ဝင်ထားသည်\n\n" +
+user.email
 );
 
-return;
-}
+}else{
 
-showToast(
-"Account Created"
+alert(
+"Login မဝင်ရသေးပါ"
 );
 
 }
 
-async function loginAccount(){
+}
+  
+async function openProfile(){
 
-let email =
-document.getElementById("userEmail").value;
+document.getElementById(
+"profilePage"
+).style.display="block";
 
-let password =
-document.getElementById("userPassword").value;
+const {
+data:{user}
+} =
+await supabaseClient.auth.getUser();
 
-const { data, error } =
-await supabaseClient.auth.signInWithPassword({
+if(user){
 
-email: email,
-password: password
+document.getElementById(
+"accountStatus"
+).innerHTML =
+"✅ Login ဝင်ထားသည်";
 
-});
+document.getElementById(
+"accountEmail"
+).innerHTML =
+user.email;
 
-console.log(data);
-console.log(error);
+}else{
 
-if(error){
+document.getElementById(
+"accountStatus"
+).innerHTML =
+"❌ Account Login မဝင်ထားပါ";
 
-alert(error.message);
-
-return;
+document.getElementById(
+"accountEmail"
+).innerHTML =
+"";
 
 }
 
-showToast("Login Success");
+}
+
+function closeProfile(){
+
+document.getElementById(
+"profilePage"
+).style.display="none";
+
+}
+
+async function logoutAccount(){
+
+await supabaseClient.auth.signOut();
+
+showToast("Logout Success");
+
+closeProfile();
 
 }
   
@@ -1008,6 +1006,53 @@ async function exportPdf(){
 }
 </script>
 <div id="toast" class="toast"></div>
+
+<div id="profilePage"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.8);
+z-index:9999;">
+
+<div
+style="
+max-width:350px;
+margin:80px auto;
+background:#1c2541;
+padding:20px;
+border-radius:20px;">
+
+<h2 style="text-align:center;color:#2ec4b6;">
+ACCOUNT
+</h2>
+
+<p id="accountStatus"
+style="text-align:center;margin-top:15px;">
+Checking...
+</p>
+
+<p id="accountEmail"
+style="text-align:center;color:#facc15;">
+</p>
+
+<button
+onclick="logoutAccount()"
+class="bg-red-600 w-full p-3 rounded-xl mt-4">
+LOGOUT
+</button>
+
+<button
+onclick="closeProfile()"
+class="bg-gray-600 w-full p-3 rounded-xl mt-2">
+CLOSE
+</button>
+
+</div>
+</div>
   
 </body>
 </html>
