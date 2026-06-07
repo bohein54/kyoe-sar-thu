@@ -22,6 +22,8 @@ href="https://i.postimg.cc/L473n1hp/Logo.png">
 <meta name="theme-color"
 content="#0b132b">
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
 <script src="https://cdn.tailwindcss.com"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -998,66 +1000,29 @@ function showToast(
 }
 
 async function exportPdf(){
-
-  const { jsPDF } =
-  window.jspdf;
-
-  let pdf =
-  new jsPDF(
-    "p",
-    "mm",
-    "a4"
-  );
-
+  // jsPDF Library ကို အမှန်ကန်ဆုံး လှမ်းယူခြင်း
+  const { jsPDF } = window.jspdf;
+  let pdf = new jsPDF("p", "mm", "a4");
   let startY = 20;
 
   pdf.setFontSize(18);
+  pdf.text("KYOE SAR THU", 105, 12, {align:"center"});
 
-  pdf.text(
-    "KYOE SAR THU",
-    105,
-    12,
-    {align:"center"}
-  );
-
-  let start =
-  currentPage * 14;
-
-  let pageData =
-  currentMonthData.slice(
-    start,
-    start + 14
-  );
+  let start = currentPage * 14;
+  let pageData = currentMonthData.slice(start, start + 14);
 
   pageData.forEach(it=>{
-
     let r = it.data;
-
-    pdf.text(
-      r[0],
-      20,
-      startY
-    );
-
-    pdf.text(
-      r[4] + " hr",
-      90,
-      startY
-    );
-
-    pdf.text(
-      r[6],
-      140,
-      startY
-    );
-
+    pdf.text(r[0], 20, startY);
+    pdf.text(r[4] + " hr", 90, startY);
+    pdf.text(r[6], 140, startY);
     startY += 10;
   });
 
-  pdf.save(
-    "KYOE_SAR_THU.pdf"
-  );
+  pdf.save("KYOE_SAR_THU.pdf");
 }
+
+    
 </script>
 <div id="toast" class="toast"></div>
 
