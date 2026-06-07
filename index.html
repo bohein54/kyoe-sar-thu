@@ -159,7 +159,7 @@ tr:hover{
 <!-- LOGIN -->
 
 <body onload="initApp()">
-
+  
 <div id="loginPage" class="flex justify-center items-center h-screen">
   <div class="bg-[#1c2541] p-6 rounded-2xl w-80 border border-gray-700 shadow-2xl">
     
@@ -353,7 +353,27 @@ function initApp(){
   monthView.value=m[new Date().getMonth()];
   document.getElementById("date").value=new Date().toISOString().split('T')[0];
 }
+supabaseClient.auth.onAuthStateChange(
+  async (event, session)=>{
 
+    if(session){
+
+      document.getElementById(
+        "accountStatus"
+      ).innerHTML =
+      "✅ Account Login ဝင်ထားသည်";
+
+      document.getElementById(
+        "accountEmail"
+      ).innerHTML =
+      session.user.email;
+
+    }
+
+  }
+);
+
+  
 async function registerAccount(){
 
 let email =
@@ -397,53 +417,73 @@ showToast(
 async function loginAccount(){
 
   let email =
-  document.getElementById("userEmail").value.trim();
+  document.getElementById("userEmail")
+  .value.trim();
 
   let password =
-  document.getElementById("userPassword").value.trim();
+  document.getElementById("userPassword")
+  .value.trim();
 
   const { data, error } =
-  await supabaseClient.auth.signInWithPassword({
+  await supabaseClient.auth
+  .signInWithPassword({
+
     email,
     password
+
   });
 
-  console.log("DATA =", data);
-  console.log("ERROR =", error);
+  console.log(data);
+  console.log(error);
 
   if(error){
+
     alert(error.message);
+
     return;
+
   }
 
-  showToast("Login Success");
-
-  document.getElementById("accountStatus").innerHTML =
+  document.getElementById(
+    "accountStatus"
+  ).innerHTML =
   "✅ Account Login ဝင်ထားသည်";
 
+  document.getElementById(
+    "accountEmail"
+  ).innerHTML =
+  data.user.email;
+
+  showToast(
+    "Login Success"
+  );
+
   closeProfile();
+
 }
   
 async function checkAccount(){
 
-const {
-  data: { session }
-} = await supabaseClient.auth.getSession();
+  const {
+    data:{session}
+  } = await supabaseClient.auth.getSession();
 
-let user = session?.user;
+  let user = session?.user;
 
-alert(
-"Login ဝင်ထားသည်\n\n" +
-user.email
-);
+  if(user){
 
-}else{
+    alert(
+      "Login ဝင်ထားသည်\n\n" +
+      user.email
+    );
 
-alert(
-"Login မဝင်ရသေးပါ"
-);
+  }else{
 
-}
+    alert(
+      "Login မဝင်ရသေးပါ"
+    );
+
+  }
 
 }
   
@@ -505,16 +545,33 @@ closeProfile();
 }
   
 function checkLogin(){
-  let user = document.getElementById("username").value;
-  let pass = document.getElementById("password").value;
-  
-  if(user === "Bo hein" && pass === "000000"){
-    document.getElementById("loginPage").style.display="none";
-    document.getElementById("mainApp").style.display="block";
+
+  let user =
+  document.getElementById("username").value;
+
+  let pass =
+  document.getElementById("password").value;
+
+  if(user === "Bo hein" &&
+     pass === "000000"){
+
+    document.getElementById("loginPage")
+      .style.display = "none";
+
+    document.getElementById("mainApp")
+      .classList.remove("hidden");
+
     loadData();
-  } else {
-    showToast("Password မှားနေပါတယ် ပြန်လည်စီစစ်ပေးပါဗျာ","error");
+
+  }else{
+
+    showToast(
+      "Password မှားနေပါတယ်",
+      "error"
+    );
+
   }
+
 }
 
 function showTab(t){
@@ -801,6 +858,7 @@ async function saveData(){
       : 400 + ot * 50
     );
 
+
   // duplicate check
   const { data: oldData } =
   await supabaseClient
@@ -808,7 +866,7 @@ async function saveData(){
     .select("*")
     .eq("data", dateValue);
 
-  if(oldData.length > 0){
+ if(oldData && oldData.length > 0){
 
     showToast(
       "ဒီရက်စွဲရှိပြီးသား",
