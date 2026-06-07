@@ -250,7 +250,7 @@ ADD RECORD
 
 <!-- LIST -->
 
-<div id="listSection" style="display:none;">
+<div id="listSection" class="hidden">
 
 <div id="pdfArea">
    <!-- summary + table only -->
@@ -939,11 +939,11 @@ function showTab(tab){
   } else {
     t2.classList.add("active");
     t1.classList.remove("active");
-    l.classList.remove("hidden");
+    l.classList.remove("hidden"); // hidden ကို ဖြုတ်ပြီး ပြသမည်
     e.classList.add("hidden");
     
-    // ဇယားကို ဒေတာရှိရှိ မရှိရှိ ဆွဲခိုင်းလိုက်မယ် (ဂျမ်းမဖြစ်တော့ပါ)
-    renderTable();
+    // 💡 LIST သို့ သွားတိုင်း နောက်ဆုံးရဒေတာကို Supabase ထံမှ အလိုအလျောက် ပြန်ဆွဲခိုင်းမည်
+    loadData(true);
   }
 }
 
