@@ -202,39 +202,28 @@ tr:hover{
   </div>
 </div>
 
-    <h2 class="text-center mb-2 text-cyan-400 font-bold text-xl tracking-widest">WELCOME</h2>
-<p class="text-center text-gray-400 text-xs mb-4">login ဝင်ရောက်ပေးပါ</p>
-    <input id="username" class="table-input mb-4" value="Bo hein" style="background:rgba(255,255,255,0.1); color:#aaa; pointer-events:none;" readonly>
-    <input id="password" type="password" class="table-input mb-4" placeholder="Password">
-    <button onclick="checkLogin()" class="w-full bg-cyan-600 p-3 rounded-xl font-bold">LOGIN</button>
-    
-    <p class="text-center text-[10px] text-gray-500 mt-4 tracking-[2px]">DEVELOPER BY BO HEIN</p>
-  </div>
-</div>
-
 
 <div id="mainApp" class="hidden p-3 max-w-4xl mx-auto">
 
   <div style="position:fixed;top:15px;right:15px;z-index:999;">
-<button
-onclick="openProfile()"
-style="
-width:45px;
-height:45px;
-border-radius:50%;
-background:#2ec4b6;
-border:none;
-font-size:22px;
-cursor:pointer;">
-👤
-</button>
-</div>
+    <button
+    onclick="openProfile()"
+    style="
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#2ec4b6;
+    border:none;
+    font-size:22px;
+    cursor:pointer;">
+    👤
+    </button>
+  </div>
 
-<div class="flex mb-3 bg-[#0b132b] rounded-t-xl overflow-hidden">
-  <div onclick="showTab('entry')" id="tab1" class="nav-btn active">ENTRY</div>
-  <div onclick="showTab('list')" id="tab2" class="nav-btn">LIST</div>
-</div>
-
+  <div class="flex mb-3 bg-[#0b132b] rounded-t-xl overflow-hidden">
+    <div onclick="showTab('entry')" id="tab1" class="nav-btn active">ENTRY</div>
+    <div onclick="showTab('list')" id="tab2" class="nav-btn">LIST</div>
+  </div>
 <!-- ENTRY -->
 
 
@@ -428,27 +417,33 @@ showToast(
 
 
 
-async function logoutAccount(){
-  // 1. Supabase ကနေ Logout ထွက်မယ်
-  await supabaseClient.auth.signOut();
+async function loginAccount(){
+  let email = document.getElementById("userEmail").value.trim();
+  let password = document.getElementById("userPassword").value.trim();
 
-  // 2. လက်ရှိ သိမ်းထားတဲ့ Data စာရင်းတွေကို အကုန် ရှင်းလင်း (Clear) ပစ်မယ်
-  currentMonthData = [];
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
 
-  // 3. ဇယားကွက် (Table Body) ထဲက စာတန်းတွေကို အကုန် အလွတ်ပြောင်းမယ်
-  const tbody = document.getElementById("dataTableBody");
-  if (tbody) tbody.innerHTML = "";
+  if(error){
+    showToast(error.message, "error");
+    return;
+  }
 
-  // 4. စုစုပေါင်းပြနေတဲ့ ရလဒ်တွေကိုလည်း 0 ပြန်လုပ်မယ်
-  if (document.getElementById("total14Ot")) document.getElementById("total14Ot").innerText = "0 hr";
-  if (document.getElementById("total14Pay")) document.getElementById("total14Pay").innerText = "฿0.00";
-  if (document.getElementById("dateRangeDisplay")) document.getElementById("dateRangeDisplay").innerText = "ရက်စွဲ - (တွက်ချက်နေသည်...)";
+  document.getElementById("accountStatus").innerHTML = "✅ Account Login ဝင်ထားသည်";
+  document.getElementById("accountEmail").innerHTML = data.user.email;
+  document.getElementById("authInputs").style.display = "none";
 
-  showToast("Logout Success");
-  closeProfile();
-
-  // 5. ဒေတာအသစ် ပြန်ဆွဲတင်မယ် (ဒေတာမရှိတော့ရင် ဇယားကွက် အလွတ်ပဲ ပြတော့မှာဖြစ်ပါတယ်)
+  showToast("Login Success - ဝင်ရောက်မှု အောင်မြင်ပါသည်");
+  
+  // ဒေတာများ ချက်ချင်း ဆွဲတင်မည်
   loadData();
+
+  // ၁ စက္ကန့်အကြာတွင် Popup Box ကို အလိုအလျောက် ပိတ်ပေးမည်
+  setTimeout(() => {
+    closeProfile();
+  }, 1000);
 }
   
 async function checkAccount(){
