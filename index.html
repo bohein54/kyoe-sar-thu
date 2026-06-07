@@ -42,81 +42,70 @@ const supabaseClient = createClient(
   supabaseKey
 );
 </script>
-
+  
 <style>
-
-
-  
-
-#monthView option{
-  background:#1c2541;
-  color:white;
+#monthView option {
+  background: #1c2541;
+  color: white;
 }
 
-body{
-  margin:0;
-  background:
-  linear-gradient(
-    135deg,
-    #0b132b,
-    #1c2541
-  );
-
-  color:white;
-  font-family:sans-serif;
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #0b132b, #1c2541);
+  color: white;
+  font-family: sans-serif;
 }
 
-.table-input{
-  background:#16213e;
-  padding:12px;
-  border-radius:12px;
-  width:100%;
-  border:1px solid #2ec4b6;
-  color:white;
+.table-input {
+  background: #16213e;
+  padding: 12px;
+  border-radius: 12px;
+  width: 100%;
+  border: 1px solid #2ec4b6;
+  color: white;
 }
 
-button{
-  transition:0.2s;
+button {
+  transition: 0.2s;
 }
 
-button:active{
-  transform:scale(.95);
+button:active {
+  transform: scale(.95);
 }
 
-.nav-btn{
-  flex:1;
-  text-align:center;
-  padding:12px;
-  cursor:pointer;
-  color:#aaa;
+.nav-btn {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+  cursor: pointer;
+  color: #aaa;
 }
 
-.nav-btn.active{
-  color:#2ec4b6;
-  border-bottom:3px solid #2ec4b6;
+/* ✅ Space ဖြုတ်ပြီး အမှန်ပြင်လိုက်ပါပြီ */
+.nav-btn.active {
+  color: #2ec4b6;
+  border-bottom: 3px solid #2ec4b6;
 }
 
-#monthView{
-  background:#16213e;
-  color:white;
-  border:1px solid #2ec4b6;
-  padding:10px;
-  border-radius:10px;
-  outline:none;
+#monthView {
+  background: #16213e;
+  color: white;
+  border: 1px solid #2ec4b6;
+  padding: 10px;
+  border-radius: 10px;
+  outline: none;
 }
-  
-/* TOAST NOTIFICATION DESIGN သစ် */
+
+/* ✅ လှပသော TOAST NOTIFICATION DESIGN သစ် (ပွားနေတာတွေ ရှင်းပြီးသား) */
 .toast {
   position: fixed !important;
-  top: -100px !important; /* စဖွင့်ချင်း အပေါ်မှာ ဖျောက်ထားမည် */
+  top: -100px !important;
   left: 50% !important;
   transform: translateX(-50%) scale(0.9) !important;
   z-index: 9999999999 !important;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Soft bounce animation */
-  
-  /* ကောင်းမွန်တဲ့ စာသားပုံစံနှင့် အရွယ်အစား */
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   padding: 14px 28px;
   border-radius: 14px;
   font-size: 14px;
@@ -128,51 +117,31 @@ button:active{
   color: white;
 }
 
-/* Noti တက်လာသည့်အချိန် */
 .toast.show {
   opacity: 1;
-  top: 25px !important; /* အပေါ်ကနေ လျှောဆင်းလာမည့် အကွာအဝေး */
+  top: 25px !important;
   transform: translateX(-50%) scale(1) !important;
 }
 
-tr:hover{
-  background:#2a3b5f;
+tr:hover {
+  background: #2a3b5f;
 }
 
-.lock-overlay{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
+.lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.lock-icon{
-  font-size:60px;
-  color:rgba(255,77,109,.45);
-  position:sticky;
-  top:50%;
-  transform:translateY(-50%);
+.lock-icon {
+  font-size: 60px;
+  color: rgba(255, 77, 109, .45);
+  position: sticky;
+  top: 50%;
+  transform: translateY(-50%);
 }
-
-.toast{
-  position:fixed !important;
-  top:20px !important;
-  left:50% !important;
-  transform:translateX(-50%) !important;
-
-  z-index:999999999 !important;
-
-  opacity:0;
-  pointer-events:none;
-  transition:.3s;
-}
-
-.toast.show{
-  opacity:1;
-  top:35px;
-}
-
 </style>
 
 </head>
