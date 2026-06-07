@@ -418,20 +418,23 @@ document.getElementById("userEmail").value;
 let password =
 document.getElementById("userPassword").value;
 
-const { error } =
+const { data, error } =
 await supabaseClient.auth.signInWithPassword({
-email,
-password
+
+email: email,
+password: password
+
 });
+
+console.log(data);
+console.log(error);
 
 if(error){
 
 alert(error.message);
-console.log(error);
-
-showToast(error.message,"error");
 
 return;
+
 }
 
 showToast("Login Success");
