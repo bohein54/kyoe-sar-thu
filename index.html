@@ -181,15 +181,31 @@ tr:hover{
 
 <body onload="initApp()">
   
-<div id="loginPage" class="flex justify-center items-center h-screen">
-  <div class="bg-[#1c2541] p-6 rounded-2xl w-80 border border-gray-700 shadow-2xl">
+<div id="loginPage" class="flex justify-center items-center h-screen bg-gradient-to-br from-[#0b132b] to-[#1c2541] p-4">
+  <div class="bg-gradient-to-b from-[#1e293b] to-[#0f172a] p-6 rounded-2xl w-85 border border-white/10 shadow-2xl backdrop-blur-md">
     
-<div class="flex justify-center mb-4">
-  <img 
-    src="https://i.postimg.cc/L473n1hp/Logo.png"
-    class="w-24 h-24 rounded-full border-4 border-cyan-400 shadow-[0_0_25px_#2ec4b6] object-cover"
-    alt="logo"
-  >
+    <div class="flex justify-center mb-4">
+      <img 
+        src="https://i.postimg.cc/L473n1hp/Logo.png"
+        class="w-24 h-24 rounded-full border-4 border-cyan-400 shadow-[0_0_25px_#2ec4b6] object-cover"
+        alt="logo"
+      >
+    </div>
+
+    <h2 class="text-center mb-1 text-cyan-400 font-extrabold text-2xl tracking-widest">WELCOME</h2>
+    <p class="text-center text-gray-400 text-xs mb-5">ကျေးဇူးပြု၍ အကောင့်ဝင်ရောက်ပေးပါ</p>
+    
+    <div class="space-y-3">
+      <input id="mainEmail" type="email" class="table-input" placeholder="Email (အီးမေးလ်လိပ်စာ)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
+      <input id="mainPassword" type="password" class="table-input" placeholder="Password (စကားဝှက်)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
+    </div>
+
+    <button onclick="checkMainLogin()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold mt-5 shadow-lg shadow-cyan-900/40 transition-all">
+      LOGIN
+    </button>
+    
+    <p class="text-center text-[10px] text-gray-500 mt-6 tracking-[2px]">DEVELOPER BY BO HEIN</p>
+  </div>
 </div>
 
     <h2 class="text-center mb-2 text-cyan-400 font-bold text-xl tracking-widest">WELCOME</h2>
@@ -525,34 +541,35 @@ closeProfile();
 
 }
   
-function checkLogin(){
+async function checkMainLogin(){
+  let email = document.getElementById("mainEmail").value.trim();
+  let password = document.getElementById("mainPassword").value.trim();
 
-  let user =
-  document.getElementById("username").value;
-
-  let pass =
-  document.getElementById("password").value;
-
-  if(user === "Bo hein" &&
-     pass === "000000"){
-
-    document.getElementById("loginPage")
-      .style.display = "none";
-
-    document.getElementById("mainApp")
-      .classList.remove("hidden");
-
-    loadData();
-
-  }else{
-
-    showToast(
-      "Password မှားနေပါတယ်",
-      "error"
-    );
-
+  if(!email || !password) {
+    showToast("Email နှင့် Password ဖြည့်စွက်ပေးပါ", "error");
+    return;
   }
 
+  // Supabase စနစ်သုံးပြီး အကောင့်စစ်ဆေးခြင်း
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if(error){
+    // အကောင့်မှားရင် သို့မဟုတ် Password မှားရင် Noti ပြမည်
+    showToast("အီးမေးလ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည်", "error");
+    return;
+  }
+
+  // အကောင့်မှန်ရင် Welcome Page ကိုဖျောက်ပြီး App ထဲ ပေးဝင်မည်
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("mainApp").classList.remove("hidden");
+
+  showToast("Login Success - ဝင်ရောက်မှု အောင်မြင်ပါသည်");
+  
+  // ဒေတာများ ဆွဲတင်မည်
+  loadData();
 }
 
 function showToast(message, type = "success") {
