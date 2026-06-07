@@ -195,7 +195,37 @@ tr:hover{
 </div>
 
 <!-- ENTRY -->
+<div class="bg-[#16213e] p-4 rounded-xl mb-4">
 
+<h3 class="text-cyan-400 font-bold mb-3">
+ACCOUNT
+</h3>
+
+<input
+id="userEmail"
+type="email"
+class="table-input mb-2"
+placeholder="Email">
+
+<input
+id="userPassword"
+type="password"
+class="table-input mb-2"
+placeholder="Password">
+
+<button
+onclick="registerAccount()"
+class="bg-green-600 w-full p-2 rounded-lg mb-2">
+REGISTER
+</button>
+
+<button
+onclick="loginAccount()"
+class="bg-blue-600 w-full p-2 rounded-lg">
+LOGIN
+</button>
+
+</div>
 
 <div id="entrySection"> 
   <div class="bg-[#1c2541] p-5 rounded-2xl border border-gray-800">
@@ -344,6 +374,78 @@ function initApp(){
   document.getElementById("date").value=new Date().toISOString().split('T')[0];
 }
 
+async function registerAccount(){
+
+let email =
+document.getElementById(
+"userEmail"
+).value;
+
+let password =
+document.getElementById(
+"userPassword"
+).value;
+
+const { error } =
+await supabaseClient.auth.signUp({
+
+email,
+password
+
+});
+
+if(error){
+
+showToast(
+error.message,
+"error"
+);
+
+return;
+}
+
+showToast(
+"Account Created"
+);
+
+}
+
+async function loginAccount(){
+
+let email =
+document.getElementById(
+"userEmail"
+).value;
+
+let password =
+document.getElementById(
+"userPassword"
+).value;
+
+const { error } =
+await supabaseClient.auth.signInWithPassword({
+
+email,
+password
+
+});
+
+if(error){
+
+showToast(
+error.message,
+"error"
+);
+
+return;
+}
+
+showToast(
+"Login Success"
+);
+
+}  
+  
 function checkLogin(){
   let user = document.getElementById("username").value;
   let pass = document.getElementById("password").value;
