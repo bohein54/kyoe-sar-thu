@@ -984,16 +984,11 @@ async function exportPdf(){
       <p id="accountEmail" class="text-xs text-yellow-400 font-mono mt-1 break-all"></p>
     </div>
 
+   <!-- 🎯 REGISTER ကို ဖြုတ်ပြီး LOGIN တစ်ခုပဲ ထားရှိမည့်ပုံစံ -->
     <div id="authInputs" class="space-y-2">
       <input id="userEmail" class="table-input" placeholder="Email" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
       <input id="userPassword" type="password" class="table-input" placeholder="Password" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
-      
-      <button onclick="registerAccount()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold text-sm shadow-lg shadow-teal-900/30 transition-all mt-2">
-        REGISTER
-      </button>
-      <button onclick="loginAccount()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold text-sm shadow-lg shadow-indigo-900/30 transition-all">
-        LOGIN
-      </button>
+      <button onclick="loginAccount()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold text-sm mt-2">LOGIN</button>
     </div>
 
     <div class="mt-4 space-y-2">
