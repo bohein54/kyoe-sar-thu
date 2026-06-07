@@ -472,13 +472,18 @@ document.getElementById(
 }
 
 async function logoutAccount(){
+  // ၁။ Supabase ကနေ အကောင့် Logout ထွက်မယ်
+  await supabaseClient.auth.signOut();
 
-await supabaseClient.auth.signOut();
+  // ၂။ လက်ရှိ သိမ်းထားတဲ့ ဒေတာတွေကို အကုန် ရှင်းပစ်မယ်
+  currentMonthData = [];
 
-showToast("Logout Success");
+  // ၃။ Noti ပြပြီး ပရိုဖိုင် Box ကို ပိတ်မယ်
+  showToast("Logout Success");
+  closeProfile();
 
-closeProfile();
-
+  // ၄။ ဒေတာဇယားကို အလွတ်ပုံစံ (အကောင့်ဝင်ရန် စာတန်း) ပြန်ပြောင်းခိုင်းမယ်
+  renderTable();
 }
   
 function checkLogin(){
@@ -920,52 +925,26 @@ showToast(
 );
 }
 
-function showToast(
+function showTab(tab){
+  let t1 = document.getElementById("tab1");
+  let t2 = document.getElementById("tab2");
+  let e = document.getElementById("entrySection");
+  let l = document.getElementById("listSection");
 
-  message,
-
-  type = "success"
-
-){
-
-  const toast =
-  document.getElementById(
-    "toast"
-  );
-
-  toast.innerHTML =
-  message;
-
-  toast.style.background =
-  "";
-
-  if(type === "error"){
-
-    toast.style.background =
-    "linear-gradient(135deg,#ff1744,#ff5252)";
-
-  }else{
-
-    toast.style.background =
-    "linear-gradient(135deg,#00c853,#64dd17)";
+  if(tab === 'entry'){
+    t1.classList.add("active");
+    t2.classList.remove("active");
+    e.classList.remove("hidden");
+    l.classList.add("hidden");
+  } else {
+    t2.classList.add("active");
+    t1.classList.remove("active");
+    l.classList.remove("hidden");
+    e.classList.add("hidden");
+    
+    // ဇယားကို ဒေတာရှိရှိ မရှိရှိ ဆွဲခိုင်းလိုက်မယ် (ဂျမ်းမဖြစ်တော့ပါ)
+    renderTable();
   }
-
-  toast.classList.add(
-    "show"
-  );
-
-  clearTimeout(
-    window.toastTimer
-  );
-
-  window.toastTimer =
-  setTimeout(()=>{
-
-    toast.classList.remove(
-      "show"
-    );
-
-  },2200);
 }
 
 async function exportPdf(){
