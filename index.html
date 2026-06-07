@@ -103,13 +103,34 @@ button:active{
   outline:none;
 }
   
-.table-container{
-  max-height:450px;
-  overflow-y:auto;
-  border-radius:15px;
-  background:#1c2541;
+/* TOAST NOTIFICATION DESIGN သစ် */
+.toast {
+  position: fixed !important;
+  top: -100px !important; /* စဖွင့်ချင်း အပေါ်မှာ ဖျောက်ထားမည် */
+  left: 50% !important;
+  transform: translateX(-50%) scale(0.9) !important;
+  z-index: 9999999999 !important;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Soft bounce animation */
+  
+  /* ကောင်းမွန်တဲ့ စာသားပုံစံနှင့် အရွယ်အစား */
+  padding: 14px 28px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-align: center;
+  min-width: 280px;
+  max-width: 90%;
+  color: white;
+}
 
-  position:relative;
+/* Noti တက်လာသည့်အချိန် */
+.toast.show {
+  opacity: 1;
+  top: 25px !important; /* အပေါ်ကနေ လျှောဆင်းလာမည့် အကွာအဝေး */
+  transform: translateX(-50%) scale(1) !important;
 }
 
 tr:hover{
@@ -355,24 +376,27 @@ function initApp(){
 }
 supabaseClient.auth.onAuthStateChange(
   async (event, session)=>{
-
     if(session){
-
-      document.getElementById(
-        "accountStatus"
-      ).innerHTML =
-      "✅ Account Login ဝင်ထားသည်";
-
-      document.getElementById(
-        "accountEmail"
-      ).innerHTML =
-      session.user.email;
-
+      document.getElementById("accountStatus").innerHTML = "✅ Account Login ဝင်ထားသည်";
+      document.getElementById("accountEmail").innerHTML = session.user.email;
+      document.getElementById("authInputs").style.display = "none";
+      
+      // Login ဝင်ထားရင် ဒေတာဆွဲတင်မယ်
+      loadData();
+    } else {
+      document.getElementById("accountStatus").innerHTML = "❌ Account Login မဝင်ထားပါ";
+      document.getElementById("accountEmail").innerHTML = "";
+      document.getElementById("authInputs").style.display = "block";
+      
+      // Logout ဖြစ်သွားရင် မျက်နှာပြင်က ဒေတာတွေအကုန် ရှင်းပစ်မယ်
+      currentMonthData = [];
+      const tbody = document.getElementById("dataTableBody");
+      if (tbody) tbody.innerHTML = "";
+      if (document.getElementById("total14Ot")) document.getElementById("total14Ot").innerText = "0 hr";
+      if (document.getElementById("total14Pay")) document.getElementById("total14Pay").innerText = "฿0.00";
     }
-
   }
 );
-
   
 async function registerAccount(){
 
@@ -414,52 +438,27 @@ showToast(
 
 
 
-async function loginAccount(){
+async function logoutAccount(){
+  // 1. Supabase ကနေ Logout ထွက်မယ်
+  await supabaseClient.auth.signOut();
 
-  let email =
-  document.getElementById("userEmail")
-  .value.trim();
+  // 2. လက်ရှိ သိမ်းထားတဲ့ Data စာရင်းတွေကို အကုန် ရှင်းလင်း (Clear) ပစ်မယ်
+  currentMonthData = [];
 
-  let password =
-  document.getElementById("userPassword")
-  .value.trim();
+  // 3. ဇယားကွက် (Table Body) ထဲက စာတန်းတွေကို အကုန် အလွတ်ပြောင်းမယ်
+  const tbody = document.getElementById("dataTableBody");
+  if (tbody) tbody.innerHTML = "";
 
-  const { data, error } =
-  await supabaseClient.auth
-  .signInWithPassword({
+  // 4. စုစုပေါင်းပြနေတဲ့ ရလဒ်တွေကိုလည်း 0 ပြန်လုပ်မယ်
+  if (document.getElementById("total14Ot")) document.getElementById("total14Ot").innerText = "0 hr";
+  if (document.getElementById("total14Pay")) document.getElementById("total14Pay").innerText = "฿0.00";
+  if (document.getElementById("dateRangeDisplay")) document.getElementById("dateRangeDisplay").innerText = "ရက်စွဲ - (တွက်ချက်နေသည်...)";
 
-    email,
-    password
-
-  });
-
-  console.log(data);
-  console.log(error);
-
-  if(error){
-
-    alert(error.message);
-
-    return;
-
-  }
-
-  document.getElementById(
-    "accountStatus"
-  ).innerHTML =
-  "✅ Account Login ဝင်ထားသည်";
-
-  document.getElementById(
-    "accountEmail"
-  ).innerHTML =
-  data.user.email;
-
-  showToast(
-    "Login Success"
-  );
-
+  showToast("Logout Success");
   closeProfile();
 
+  // 5. ဒေတာအသစ် ပြန်ဆွဲတင်မယ် (ဒေတာမရှိတော့ရင် ဇယားကွက် အလွတ်ပဲ ပြတော့မှာဖြစ်ပါတယ်)
+  loadData();
 }
   
 async function checkAccount(){
@@ -488,44 +487,26 @@ async function checkAccount(){
 }
   
 async function openProfile(){
+  document.getElementById("profilePage").style.display="flex"; // တိုင်ပင်ညှိထားတဲ့ Flex ဒီဇိုင်းအတိုင်း ပွင့်ရန်
 
-document.getElementById(
-"profilePage"
-).style.display="block";
+  const { data:{user} } = await supabaseClient.auth.getUser();
 
-const {
-data:{user}
-} =
-await supabaseClient.auth.getUser();
-
-if(user){
-
-document.getElementById(
-"accountStatus"
-).innerHTML =
-"✅ Login ဝင်ထားသည်";
-
-document.getElementById(
-"accountEmail"
-).innerHTML =
-user.email;
-
-}else{
-
-document.getElementById(
-"accountStatus"
-).innerHTML =
-"❌ Account Login မဝင်ထားပါ";
-
-document.getElementById(
-"accountEmail"
-).innerHTML =
-"";
-
+  if(user){
+    document.getElementById("accountStatus").innerHTML = "✅ Login ဝင်ထားသည်";
+    document.getElementById("accountEmail").innerHTML = user.email;
+    document.getElementById("authInputs").style.display = "none";
+    
+    // 👤 ပရိုဖိုင်ဖွင့်လိုက်ရင် အကောင့်ဝင်ထားကြောင်း Noti ပြပေးမည်
+    showToast("အကောင့်ဝင်ရောက်ထားပြီးသားဖြစ်သည်");
+  } else {
+    document.getElementById("accountStatus").innerHTML = "❌ Account Login မဝင်ထားပါ";
+    document.getElementById("accountEmail").innerHTML = "";
+    document.getElementById("authInputs").style.display = "block";
+    
+    // အကောင့်မဝင်ရသေးရင် သတိပေး Noti ပြမည်
+    showToast("Login မဝင်ရသေးပါ၊ ဝင်ရောက်ပေးပါ", "error");
+  }
 }
-
-}
-
 function closeProfile(){
 
 document.getElementById(
@@ -574,9 +555,34 @@ function checkLogin(){
 
 }
 
-function showTab(t){
-  document.getElementById("entrySection").style.display = t === "entry" ? "block" : "none";
-  document.getElementById("listSection").style.display = t === "list" ? "block" : "none";
+function showToast(message, type = "success") {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  toast.innerHTML = message;
+
+  // အောင်မြင်မှု သို့မဟုတ် အမှားအယွင်းအလိုက် ခေတ်မီပြီး လင်းလက်သော အရောင်များ ပြောင်းလဲခြင်း
+  if (type === "error") {
+    // အနီရောင် Glow ဒီဇိုင်း
+    toast.style.background = "linear-gradient(135deg, #ef4444, #b91c1c)";
+    toast.style.boxShadow = "0 10px 25px rgba(239, 68, 68, 0.4)";
+    toast.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+  } else {
+    // အစိမ်းရောင် Glow ဒီဇိုင်း
+    toast.style.background = "linear-gradient(135deg, #10b981, #047857)";
+    toast.style.boxShadow = "0 10px 25px rgba(16, 185, 129, 0.4)";
+    toast.style.border = "1px solid rgba(255, 255, 255, 0.2)";
+  }
+
+  // Noti ကို ပြသခြင်း
+  toast.classList.add("show");
+
+  clearTimeout(window.toastTimer);
+
+  // ၂.၅ စက္ကန့်ပြည့်လျှင် အပေါ်သို့ ပြန်လည် လျှောတက် ပျောက်ကွယ်သွားမည်
+  window.toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
 }
 
 function calculate(){
@@ -600,65 +606,51 @@ function calculate(){
 }
 
 async function loadData(keepPage = false){
-
   let oldPage = currentPage;
+  let month = document.getElementById("monthView").value;
 
-  let month =
-  document.getElementById(
-    "monthView"
-  ).value;
-
-  const { data, error } =
-  await supabaseClient
-    .from("salary_data")
-    .select("*")
-    .order("data", {
-      ascending:true
-    });
-
-  if(error){
-
-    console.log(error);
-
-    showToast(
-      "Load Error",
-      "error"
-    );
-
+  // 1. လက်ရှိ Login ဝင်ထားတဲ့ User ရဲ့ အချက်အလက်ကို ယူမယ်
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  
+  // အကယ်၍ Login မဝင်ရသေးရင် ဒေတာမဆွဲဘဲ ရပ်လိုက်မယ်
+  if (!user) {
+    currentMonthData = [];
+    renderTable();
     return;
   }
 
-  currentMonthData =
-  data
-  .filter(item => {
+  // 2. Database ထဲကနေ လက်ရှိ Login ဝင်ထားတဲ့သူရဲ့ ID (.eq("user_id", user.id)) နဲ့ပဲ ဒေတာကို စစ်ပြီးဆွဲမယ်
+  const { data, error } = await supabaseClient
+    .from("salary_data")
+    .select("*")
+    .eq("user_id", user.id) // 👈 ဒီလိုင်းလေးက အကောင့်တစ်ခုချင်းစီရဲ့ ဒေတာကို သီးသန့်ခွဲထုတ်ပေးတာပါ
+    .order("data", { ascending:true });
 
-    let itemMonth =
-    new Date(item.data)
-    .toLocaleString(
-      "en-US",
-      { month:"long" }
-    )
-    .toUpperCase();
+  if(error){
+    console.log(error);
+    showToast("Load Error", "error");
+    return;
+  }
 
-    return itemMonth === month;
-  })
-  .map(item => {
-
-    return {
-
-      rowIndex: item.id,
-
-      data:[
-        item.data,
-        item.start_time,
-        item.end_time,
-        item.work_hours,
-        item.ot_hours,
-        item.ot_pay,
-        item.daily_pay
-      ]
-    };
-  });
+  currentMonthData = data
+    .filter(item => {
+      let itemMonth = new Date(item.data).toLocaleString("en-US", { month:"long" }).toUpperCase();
+      return itemMonth === month;
+    })
+    .map(item => {
+      return {
+        rowIndex: item.id,
+        data:[
+          item.data,
+          item.start_time,
+          item.end_time,
+          item.work_hours,
+          item.ot_hours,
+          item.ot_pay,
+          item.daily_pay
+        ]
+      };
+    });
 
   if(keepPage){
     currentPage = oldPage;
@@ -814,124 +806,67 @@ function changePage(step){
 
 
 async function saveData(){
-
   const btn = document.getElementById("addBtn");
-
   btn.disabled = true;
   btn.innerText = "SAVING...";
 
-  let dateValue =
-  document.getElementById("date").value;
-
-  let startVal =
-  document.getElementById("startTime").value;
-
-  let endVal =
-  document.getElementById("endTime").value;
-
-  let map = {
-    "05:00 PM":9,
-    "06:00 PM":10,
-    "07:00 PM":11,
-    "08:00 PM":12,
-    "09:00 PM":13,
-    "10:00 PM":14
-  };
-
-  let hrs = map[endVal] || 0;
-
-  let isOff =
-  endVal === "OFF DAY";
-
-  let isHalf =
-  endVal === "12:00 PM";
-
-  let ot =
-  hrs > 9 ? hrs - 9 : 0;
-
-  let dailyPay =
-  isOff
-  ? 0
-  : (
-      isHalf
-      ? 200
-      : 400 + ot * 50
-    );
-
-
-  // duplicate check
-  const { data: oldData } =
-  await supabaseClient
-    .from("salary_data")
-    .select("*")
-    .eq("data", dateValue);
-
- if(oldData && oldData.length > 0){
-
-    showToast(
-      "ဒီရက်စွဲရှိပြီးသား",
-      "error"
-    );
-
+  // ၁။ လက်ရှိ Login ဝင်ထားတဲ့ User ရဲ့ ID ကို ယူမယ်
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) {
+    showToast("ကျေးဇူးပြု၍ အရင် Login ဝင်ပါ", "error");
     btn.disabled = false;
     btn.innerText = "ADD RECORD";
-
     return;
   }
 
-  const { error } =
-  await supabaseClient
+  let dateValue = document.getElementById("date").value;
+  let startVal = document.getElementById("startTime").value;
+  let endVal = document.getElementById("endTime").value;
+
+  let map = { "05:00 PM":9, "06:00 PM":10, "07:00 PM":11, "08:00 PM":12, "09:00 PM":13, "10:00 PM":14 };
+  let hrs = map[endVal] || 0;
+  let isOff = endVal === "OFF DAY";
+  let isHalf = endVal === "12:00 PM";
+  let ot = hrs > 9 ? hrs - 9 : 0;
+  let dailyPay = isOff ? 0 : (isHalf ? 200 : 400 + ot * 50);
+
+  // duplicate check (မိမိအကောင့်ထဲမှာပဲ ဒီရက်စွဲ ရှိမရှိ စစ်တာဖြစ်လို့ .eq("user_id", user.id) ထည့်ရပါမယ်)
+  const { data: oldData } = await supabaseClient
+    .from("salary_data")
+    .select("*")
+    .eq("data", dateValue)
+    .eq("user_id", user.id);
+
+  if(oldData && oldData.length > 0){
+    showToast("ဒီရက်စွဲရှိပြီးသား", "error");
+    btn.disabled = false;
+    btn.innerText = "ADD RECORD";
+    return;
+  }
+
+  // ၂။ ဒေတာအသစ်သွင်းတဲ့နေရာမှာ user_id: user.id ကိုပါ ထည့်သွင်းသိမ်းဆည်းပါမယ်
+  const { error } = await supabaseClient
     .from("salary_data")
     .insert([{
-
+      user_id: user.id, // 👈 အရေးကြီးဆုံးအချက် - ဒါမှ ဘယ်သူ့ဒေတာလဲဆိုတာ မှတ်ထားမှာပါ
       data: dateValue,
-
       start_time: startVal,
-
       end_time: endVal,
-
-      work_hours:
-      isOff
-      ? 0
-      : (
-          isHalf
-          ? 4
-          : hrs
-        ),
-
-      ot_hours:
-      isOff || isHalf
-      ? 0
-      : ot,
-
-      ot_pay:
-      "฿" +
-      (ot * 50).toFixed(2),
-
-      daily_pay:
-      "฿" +
-      dailyPay.toFixed(2)
-
+      work_hours: isOff ? 0 : (isHalf ? 4 : hrs),
+      ot_hours: isOff || isHalf ? 0 : ot,
+      ot_pay: "฿" + (ot * 50).toFixed(2),
+      daily_pay: "฿" + dailyPay.toFixed(2)
     }]);
 
   btn.disabled = false;
   btn.innerText = "ADD RECORD";
 
- if(error){
-
-  console.log(error);
-
-  alert(JSON.stringify(error));
-
-  showToast(
-    "Database Save Error",
-    "error"
-  );
-
-  return;
-}
+  if(error){
+    console.log(error);
+    showToast("Database Save Error", "error");
+    return;
+  }
   showToast("သိမ်းဆည်းပြီးပါပြီ");
-
   loadData();
 }
   
@@ -1130,72 +1065,38 @@ async function exportPdf(){
 </script>
 <div id="toast" class="toast"></div>
 
-<div id="profilePage"
-style="
-display:none;
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.8);
-z-index:999999999;">
+<div id="profilePage" style="display:none;" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-[999999999]">
+  <div class="bg-gradient-to-b from-[#1e293b] to-[#0f172a] p-6 rounded-2xl w-[350px] border border-white/10 shadow-2xl transition-all">
+    
+    <h2 class="text-center text-cyan-400 font-extrabold text-xl tracking-wider mb-4">ACCOUNT</h2>
 
-<div
-style="
-max-width:350px;
-margin:80px auto;
-background:#1c2541;
-padding:20px;
-border-radius:20px;">
+    <div class="bg-black/20 p-3 rounded-xl border border-white/5 text-center mb-4">
+      <p id="accountStatus" class="text-sm font-semibold text-gray-200">Checking...</p>
+      <p id="accountEmail" class="text-xs text-yellow-400 font-mono mt-1 break-all"></p>
+    </div>
 
-<h2 style="text-align:center;color:#2ec4b6;">
-ACCOUNT
-</h2>
+    <div id="authInputs" class="space-y-2">
+      <input id="userEmail" class="table-input" placeholder="Email" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
+      <input id="userPassword" type="password" class="table-input" placeholder="Password" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
+      
+      <button onclick="registerAccount()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold text-sm shadow-lg shadow-teal-900/30 transition-all mt-2">
+        REGISTER
+      </button>
+      <button onclick="loginAccount()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold text-sm shadow-lg shadow-indigo-900/30 transition-all">
+        LOGIN
+      </button>
+    </div>
 
-<p id="accountStatus"
-style="text-align:center;margin-top:15px;">
-Checking...
-</p>
+    <div class="mt-4 space-y-2">
+      <button onclick="logoutAccount()" class="w-full bg-gradient-to-r from-rose-600 to-red-600 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold text-sm shadow-lg shadow-red-900/30 transition-all">
+        LOGOUT
+      </button>
+      <button onclick="closeProfile()" class="w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold text-sm transition-all">
+        CLOSE
+      </button>
+    </div>
 
-<p id="accountEmail"
-style="text-align:center;color:#facc15;">
-</p>
-<input
-id="userEmail"
-class="table-input mb-2"
-placeholder="Email">
-
-<input
-id="userPassword"
-type="password"
-class="table-input mb-2"
-placeholder="Password">
-
-<button
-onclick="registerAccount()"
-class="w-full bg-green-600 p-2 rounded mb-2">
-REGISTER
-</button>
-
-<button
-onclick="loginAccount()"
-class="w-full bg-blue-600 p-2 rounded mb-2">
-LOGIN
-</button>
-<button
-onclick="logoutAccount()"
-class="bg-red-600 w-full p-3 rounded-xl mt-4">
-LOGOUT
-</button>
-
-<button
-onclick="closeProfile()"
-class="bg-gray-600 w-full p-3 rounded-xl mt-2">
-CLOSE
-</button>
-
-</div>
+  </div>
 </div>
   
 </body>
