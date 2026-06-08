@@ -374,32 +374,24 @@ ADD RECORD
  ရက်စွဲ - (တွက်ချက်နေသည်...)
 </div>
 
-<div class="table-container border border-gray-800"
-style="position:relative;"
-ondblclick="handleTableDoubleClick()">
+<div class="table-container border border-gray-800 rounded-xl" id="myTableWrapper">
   <table class="w-full text-center text-[12px]">
-    <thead class="bg-[#0b132b] text-gray-400">
-      <tr>
-        <th class="p-3 border-b border-gray-700">DATE</th>
-        <th class="p-3 border-b border-gray-700">DAY</th>
-        <th class="p-3 border-b border-gray-700">OT</th>
-        <th class="p-3 border-b border-gray-700">PAY</th>
-        <th class="p-3 border-b border-gray-700">DEL</th>
+    <thead>
+      <tr class="bg-black/20 text-gray-400 font-bold">
+        <th class="p-3 border-b border-gray-800">DATE</th>
+        <th class="p-3 border-b border-gray-800">OT</th>
+        <th class="p-3 border-b border-gray-800">PAY</th>
+        <th class="p-3 border-b border-gray-800">DEL</th>
       </tr>
     </thead>
-    <tbody id="dataTableBody"></tbody>
+    <tbody id="dataTableBody">
+      </tbody>
   </table>
-  <div id="tableLockOverlay"
-class="lock-overlay"
-style="display:none;">
-
-  <div class="lock-icon">
-    🔒
+  
+  <div id="tableLockOverlay" class="lock-overlay" style="display:none;" ondblclick="handleTableDoubleClick()">
+    <div class="lock-icon">🔒</div>
   </div>
 </div>
-</div>
-</div>
-
 <div class="flex justify-between items-center mt-4">
   <button id="prevBtn" onclick="changePage(-1)" class="bg-gray-700 px-4 py-2 rounded-lg text-[10px] font-bold disabled:opacity-30">အနောက်သို့</button>
   <span id="pageInfo" class="text-cyan-400 font-bold text-[11px]"></span>
