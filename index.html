@@ -273,19 +273,9 @@ transform: translateY(-50%);
 <div id="mainApp" class="hidden p-3 max-w-4xl mx-auto">
 
   <div style="position:fixed;top:15px;right:15px;z-index:999;">
-    <button
-    onclick="openProfile()"
-   id="topNavProfilePic
-    style="
-    width:45px;
-    height:45px;
-    border-radius:50%;
-    background:#2ec4b6;
-    border:none;
-    font-size:22px;
-    cursor:pointer;">
-    👤
-    </button>
+    <button onclick="openProfile()" class="w-10 h-10 rounded-full overflow-hidden border border-white/25">
+  <img id="topNavProfilePic" src="https://i.postimg.cc/L473n1hp/Logo.png" class="w-full h-full object-cover">
+</button>
   </div>
 
   <div class="flex mb-3 bg-[#0b132b] rounded-t-xl overflow-hidden">
@@ -432,12 +422,8 @@ function getStorageKey(month){
   return "KYOE_SAR_THU_" + month;
 }
 
-function initApp(){
-let savedPic = localStorage.getItem("KST_PROFILE_PIC");
-  if(savedPic) {
-    if(document.getElementById("modalProfilePic")) document.getElementById("modalProfilePic").src = savedPic;
-    if(document.getElementById("topNavProfilePic")) document.getElementById("topNavProfilePic").src = savedPic;
-  }
+function initApp() {
+  // ၁။ ⚙️ CONFIG Settings ပြန်လည်ရယူခြင်း
   let savedConfig = localStorage.getItem("KST_CONFIG");
   if(savedConfig) {
     CONFIG = JSON.parse(savedConfig);
@@ -445,25 +431,45 @@ let savedPic = localStorage.getItem("KST_PROFILE_PIC");
     if(document.getElementById("cfgOtPay")) document.getElementById("cfgOtPay").value = CONFIG.otPayRate;
     if(document.getElementById("cfgStartDay")) document.getElementById("cfgStartDay").value = CONFIG.salaryStartDay;
   }
-  // Theme ပြန်လည်ရယူခြင်း
-  if(localStorage.getItem("KST_THEME") === "light") document.body.classList.add("light-theme");
-  // Profile ပုံ ပြန်လည်ရယူခြင်း
-  let savedPic = localStorage.getItem("KST_PROFILE_PIC");
-  if(savedPic && document.getElementById("modalProfilePic")) {
-    document.getElementById("modalProfilePic").src = savedPic;
+  
+  // ၂။ 🌓 Theme ပြန်လည်ရယူခြင်း
+  if(localStorage.getItem("KST_THEME") === "light") {
+    document.body.classList.add("light-theme");
+  } else {
+    document.body.classList.remove("light-theme");
   }
   
-  let m=["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
-  let monthView = document.getElementById("monthView");
-  if(monthView) monthView.innerHTML = "";
-  m.forEach(x=>{
-    let o=document.createElement("option");
-    o.value=x; o.text=x; monthView.appendChild(o);
-  });
-  if(monthView) monthView.value=m[new Date().getMonth()];
-  if(document.getElementById("date")) {
-    document.getElementById("date").value=new Date().toISOString().split('T')[0];
+  // ၃။ 📸 Profile ပုံ ပြန်လည်ရယူခြင်း
+  let savedPic = localStorage.getItem("KST_PROFILE_PIC");
+  if(savedPic) {
+    if(document.getElementById("modalProfilePic")) document.getElementById("modalProfilePic").src = savedPic;
+    if(document.getElementById("topNavProfilePic")) document.getElementById("topNavProfilePic").src = savedPic;
   }
+
+  // ၄။ 📅 လရွေးချယ်ရန် Dropdown (January to December) ကို ဒေတာထည့်ခြင်း
+  let monthView = document.getElementById("monthView");
+  if(monthView) {
+    monthView.innerHTML = "";
+    let months = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
+    
+    months.forEach(mName => {
+      let opt = document.createElement("option");
+      opt.value = mName; 
+      opt.text = mName; 
+      monthView.appendChild(opt);
+    });
+    
+    // လက်ရှိ ရောက်နေတဲ့လကို Auto ရွေးပေးထားမည်
+    monthView.value = months[new Date().getMonth()];
+  }
+
+  // ၅။ ⏰ Entry Form ထဲက Date Input ကို ယနေ့ရက်စွဲ Auto ချိန်ပေးခြင်း
+  if(document.getElementById("date")) {
+    document.getElementById("date").value = new Date().toISOString().split('T')[0];
+  }
+
+  // ၆။ Login Status ကို စစ်ဆေးခြင်း
+  checkLogin(); 
 }
 
 function switchTab(tab) {
@@ -1054,56 +1060,54 @@ loadData();
 
 }
 }
-async function updateCell(
-rowIndex,
-colIndex,
-newValue
-){
+async function updateCell(rowIndex, colIndex, newValue) {
+  let updateData = currentMonthData.find(it => it.rowIndex === rowIndex);
+  if (!updateData) return;
 
-let columnMap = {
-0: "data",
-4: "ot_hours"
-};
+  // 1. DATE ပြင်ဆင်ခြင်း Logic
+  if (colIndex === 0) {
+    updateData.data[0] = newValue;
+  } 
+  
+  // 2. OT ပြင်ဆင်ခြင်း Logic
+  if (colIndex === 4) {
+    let rawValue = newValue.trim();
+    updateData.data[4] = rawValue;
 
-let updateData = {};
+    // 🎯 "00" ရိုက်ခဲ့လျှင် Off Day သတ်မှတ်ပြီး daily_pay ကို 0 လုပ်မည့် နေရာ
+    if (rawValue === "00" || rawValue === "0") {
+      updateData.data[2] = "OFF DAY";
+      updateData.data[4] = "0";
+      updateData.data[5] = "฿0.00"; // ot_pay
+      updateData.data[6] = "฿0.00"; // daily_pay
+    } else {
+      // ပုံမှန် OT ရှိလျှင် ပုံမှန်အတိုင်း ပြန်တွက်ချက်မည်
+      updateData.data[2] = "NORMAL"; // သို့မဟုတ် ပုံမှန် အချိန်ဆင်းချိန်
+      let ot = parseFloat(rawValue) || 0;
+      let calculatedPay = CONFIG.dayPay + (ot * CONFIG.otPayRate);
+      
+      updateData.data[5] = "฿" + (ot * CONFIG.otPayRate).toFixed(2);
+      updateData.data[6] = "฿" + calculatedPay.toFixed(2);
+    }
+  }
 
-updateData[
-columnMap[colIndex]
-] = newValue;
+  // 3. Supabase Database သို့ ဒေတာ အလိုအလျောက် သွားသိမ်းခြင်း
+  try {
+    let rowId = updateData.id; 
+    let { error } = await _supabase
+      .from('your_table_name') // ⚠️ မိမိရဲ့ Supabase Table အမည် မှန်အောင် ပြန်ထည့်ပေးပါဗျာ
+      .update({ data: updateData.data })
+      .eq('id', rowId);
 
-// OT ပြောင်းရင် daily pay ပြန်တွက်
-if(colIndex == 4){
-  let ot = parseFloat(newValue) || 0;
-  // CONFIG Variable သုံးပြီး Daily Pay နှင့် OT Pay ပြန်တွက်ခြင်း
-  updateData.daily_pay = "฿" + (CONFIG.dayPay + ot * CONFIG.otPayRate).toFixed(2);
-  updateData.ot_pay = "฿" + (ot * CONFIG.otPayRate).toFixed(2);
+    if (error) throw error;
+    
+    showToast("💾 ဒေတာကို အလိုအလျောက် အပ်ဒိတ်လုပ်ပြီးပါပြီ");
+    renderTable(); // ဇယားကို ပြန်ဆွဲပြီး update ဖြစ်သွားသော တန်ဖိုးများ ပြပေးမည်
+  } catch (err) {
+    console.error("Error updating cell:", err);
+    showToast("❌ ဒေတာအပ်ဒိတ်လုပ်ရာတွင် အမှားအယွင်းရှိနေပါသည်");
+  }
 }
-const { error } =
-await supabaseClient
-.from("salary_data")
-.update(updateData)
-.eq("id", rowIndex);
-
-if(error){
-
-console.log(error);
-
-showToast(
-  "Update Error",
-  "error"
-);
-
-return;
-
-}
-
-loadData(true);
-
-showToast(
-"ပြင်ပြီးပါပြီ"
-);
-}
-
 function showTab(tab){
   let t1 = document.getElementById("tab1");
   let t2 = document.getElementById("tab2");
