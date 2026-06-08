@@ -44,127 +44,198 @@ const supabaseClient = createClient(
 </script>
   
 <style>
-:root {
-  --bg-gradient: linear-gradient(135deg, #0b132b, #1c2541);
-  --card-bg: #1c2541;
-  --text-main: #ffffff;
-  --input-bg: #111936;
-  --border-color: #2ec4b6;
-}
-
-.light-theme {
-  --bg-gradient: linear-gradient(135deg, #f0f2f5, #e4e6eb);
-  --card-bg: #ffffff;
-  --text-main: #1c2541;
-  --input-bg: #f0f2f5;
-  --border-color: #059669;
-}
-
-body {
-  margin: 0;
-  background: var(--bg-gradient);
-  color: var(--text-main);
-  font-family: sans-serif;
-  transition: background 0.3s, color 0.3s;
-}
-
-/* 🎯 Input Select Box များကို ကျစ်ကျစ်လျစ်လျစ်နှင့် လှပအောင် ထိန်းချုပ်ခြင်း */
-.table-input {
-  background: var(--input-bg) !important;
-  padding: 8px 12px !important; /* Padding လျှော့ချလိုက်သည် */
-  border-radius: 10px !important;
-  width: 100%;
-  border: 1px solid rgba(46, 196, 182, 0.3) !important;
-  color: var(--text-main) !important;
-  font-size: 13px !important;
-  outline: none !important;
-  box-shadow: none !important;
-  appearance: none; /* Mobile Dropdown မြှား အကျည်းတန်တာ ဖျောက်ရန် */
-  -webkit-appearance: none;
-}
-
-.table-input:focus {
-  border-color: #2ec4b6 !important;
-  box-shadow: 0 0 10px rgba(46, 196, 182, 0.2) !important;
-}
 
 #monthView option {
-  background: #1c2541;
-  color: white;
+
+background: #1c2541;
+
+color: white;
+
 }
+
+
+
+body {
+
+margin: 0;
+
+background: linear-gradient(135deg, #0b132b, #1c2541);
+
+color: white;
+
+font-family: sans-serif;
+
+}
+
+
+
+.table-input {
+
+background: #16213e;
+
+padding: 12px;
+
+border-radius: 12px;
+
+width: 100%;
+
+border: 1px solid #2ec4b6;
+
+color: white;
+
+}
+
+
 
 button {
-  transition: 0.2s;
+
+transition: 0.2s;
+
 }
+
+
+
 button:active {
-  transform: scale(.95);
+
+transform: scale(.95);
+
 }
+
+
 
 .nav-btn {
-  flex: 1;
-  text-align: center;
-  padding: 12px;
-  cursor: pointer;
-  color: #aaa;
-  font-weight: bold;
-  font-size: 14px;
+
+flex: 1;
+
+text-align: center;
+
+padding: 12px;
+
+cursor: pointer;
+
+color: #aaa;
+
 }
+
+
+
+/* ✅ Space ဖြုတ်ပြီး အမှန်ပြင်လိုက်ပါပြီ */
+
 .nav-btn.active {
-  color: #2ec4b6;
-  border-bottom: 3px solid #2ec4b6;
+
+color: #2ec4b6;
+
+border-bottom: 3px solid #2ec4b6;
+
 }
 
-/* 🔒 LOCK OVERLAY DESIGN */
-.lock-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(11, 19, 43, 0.85);
-  backdrop-filter: blur(4px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 50;
-}
-.lock-icon {
-  font-size: 40px;
-  animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.6; }
+
+
+select#monthView {
+  background-color: #1c2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #2ec4b6;
+  padding: 8px;
+  border-radius: 8px;
+  appearance: auto;
 }
 
-/* 🍞 TOAST NOTIFICATION */
+
+/* ✅ လှပသော TOAST NOTIFICATION DESIGN သစ် (ပွားနေတာတွေ ရှင်းပြီးသား) */
+
 .toast {
-  position: fixed !important;
-  top: -100px !important;
-  left: 50% !important;
-  transform: translateX(-50%) scale(0.9) !important;
-  z-index: 9999999999 !important;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  padding: 10px 20px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: bold;
-  text-align: center;
-  color: white;
+
+position: fixed !important;
+
+top: -100px !important;
+
+left: 50% !important;
+
+transform: translateX(-50%) scale(0.9) !important;
+
+z-index: 9999999999 !important;
+
+opacity: 0;
+
+pointer-events: none;
+
+transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+padding: 14px 28px;
+
+border-radius: 14px;
+
+font-size: 14px;
+
+font-weight: bold;
+
+letter-spacing: 0.5px;
+
+text-align: center;
+
+min-width: 280px;
+
+max-width: 90%;
+
+color: white;
+
 }
+
+
+
 .toast.show {
-  opacity: 1;
-  top: 20px !important;
-  transform: translateX(-50%) scale(1) !important;
+
+opacity: 1;
+
+top: 25px !important;
+
+transform: translateX(-50%) scale(1) !important;
+
 }
+
+
 
 tr:hover {
-  background: rgba(42, 59, 95, 0.4);
+
+background: #2a3b5f;
+
 }
+
+
+
+.lock-overlay {
+
+position: absolute;
+
+top: 0;
+
+left: 0;
+
+width: 100%;
+
+height: 100%;
+
+}
+
+
+
+.lock-icon {
+
+font-size: 60px;
+
+color: rgba(255, 77, 109, .45);
+
+position: sticky;
+
+top: 50%;
+
+transform: translateY(-50%);
+
+}
+
 </style>
+
+
 
 </head>
 
@@ -173,6 +244,9 @@ tr:hover {
 <!-- LOGIN -->
 
 <body onload="initApp()">
+
+
+  
   
 <div id="loginPage" class="flex justify-center items-center h-screen">
   <div class="bg-[#1c2541] p-6 rounded-2xl w-80 border border-gray-700 shadow-2xl">
@@ -201,6 +275,7 @@ tr:hover {
   <div style="position:fixed;top:15px;right:15px;z-index:999;">
     <button
     onclick="openProfile()"
+   id="topNavProfilePic
     style="
     width:45px;
     height:45px;
@@ -309,18 +384,14 @@ ADD RECORD
  ရက်စွဲ - (တွက်ချက်နေသည်...)
 </div>
 
-<div class="table-container border border-gray-800" style="position: relative;" ondblclick="handleTableDoubleClick()">
-  <table class="w-full text-center text-[12px]">
-    </table>
-  
-  <div id="tableLockOverlay" class="lock-overlay" style="display:none;">
-    <div class="lock-icon">🔒</div>
-  </div>
-</div>
+<div class="table-container border border-gray-800"
+style="position:relative;"
+ondblclick="handleTableDoubleClick()">
   <table class="w-full text-center text-[12px]">
     <thead class="bg-[#0b132b] text-gray-400">
       <tr>
         <th class="p-3 border-b border-gray-700">DATE</th>
+        <th class="p-3 border-b border-gray-700">DAY</th>
         <th class="p-3 border-b border-gray-700">OT</th>
         <th class="p-3 border-b border-gray-700">PAY</th>
         <th class="p-3 border-b border-gray-700">DEL</th>
@@ -335,7 +406,6 @@ style="display:none;">
   <div class="lock-icon">
     🔒
   </div>
-
 </div>
 </div>
 </div>
@@ -363,7 +433,11 @@ function getStorageKey(month){
 }
 
 function initApp(){
- // CONFIG Settings ပြန်လည်ရယူခြင်း
+let savedPic = localStorage.getItem("KST_PROFILE_PIC");
+  if(savedPic) {
+    if(document.getElementById("modalProfilePic")) document.getElementById("modalProfilePic").src = savedPic;
+    if(document.getElementById("topNavProfilePic")) document.getElementById("topNavProfilePic").src = savedPic;
+  }
   let savedConfig = localStorage.getItem("KST_CONFIG");
   if(savedConfig) {
     CONFIG = JSON.parse(savedConfig);
@@ -392,7 +466,19 @@ function initApp(){
   }
 }
 
-
+function switchTab(tab) {
+  // ရှိပြီးသား Tab active ကုဒ်များ...
+  
+  // 🎯 Entry Page မှာ အောက်က Pagination ခလုတ်များ ဖျောက်ထားရန် Logic
+  let paginationRow = document.getElementById("prevBtn").parentElement; // ခလုတ်များပါသော Container div
+  if (paginationRow) {
+    if (tab === 'entry') {
+      paginationRow.style.display = "none";
+    } else {
+      paginationRow.style.display = "flex";
+    }
+  }
+}
 // ==========================================
 // ⚙️ NEW FEATURES SETTINGS LOGIC 
 // ==========================================
@@ -421,7 +507,11 @@ function uploadProfilePic(input) {
     reader.onload = function(e) {
       let base64Img = e.target.result;
       localStorage.setItem("KST_PROFILE_PIC", base64Img);
-      document.getElementById("modalProfilePic").src = base64Img;
+      
+      // နေရာအားလုံးတွင် ပုံတစ်ခါတည်း ပြောင်းလဲခြင်း
+      if(document.getElementById("modalProfilePic")) document.getElementById("modalProfilePic").src = base64Img;
+      if(document.getElementById("topNavProfilePic")) document.getElementById("topNavProfilePic").src = base64Img;
+      
       showToast("📸 Profile ပုံ ပြောင်းလဲပြီးပါပြီဗျာ");
     };
     reader.readAsDataURL(input.files[0]);
@@ -784,25 +874,25 @@ function renderTable() {
       rowStyle = "color: #facc15; font-weight: bold;";
     }
 
-    // ပြင်ဆင်ပြီးသား UI: DATE ကို နှိပ်ရင် Date Picker ပွင့်ပြီး ပြင်လို့ရမယ်၊ OT ကို Click နှိပ်ပြီး ဂဏန်းရိုက်ပြင်လို့ရမယ်
+    // Dash border များဖျောက်ထားပြီး သပ်ရပ်သွားသော ဇယားကွက် Row UI
     tbody.innerHTML += `
       <tr style="border-bottom:0.5px solid rgba(255,255,255,0.08); ${rowStyle}">
-        <td style="padding:8px; position:relative;">
-          <span onclick="this.nextElementSibling.style.display='inline-block'; this.style.display='none';" style="cursor:pointer; border-bottom: 1px dashed #2ec4b6;">${r[0]}</span>
+        <td style="padding:10px 8px;">
+          <span onclick="this.nextElementSibling.style.display='inline-block'; this.style.display='none';" style="cursor:pointer;">${r[0]}</span>
           <input type="date" value="${r[0]}" 
-                 style="display:none; background:#16213e; color:white; border:1px solid #2ec4b6; rounded:6px; padding:2px; font-size:11px;"
+                 style="display:none; background:#16213e; color:white; border:1px solid #2ec4b6; padding:2px; font-size:11px; rounded:4px;"
                  onchange="updateCell(${it.rowIndex}, 0, this.value)">
         </td>
-        <td style="padding:8px;">
+        <td style="padding:10px 8px;">
           <span contenteditable="true" 
                 inputmode="decimal"
-                style="display:inline-block; min-width:30px; outline:none; border-bottom: 1px dashed #facc15; padding: 0 4px;"
-                onkeypress="if(event.which==32 || event.which==13) { event.preventDefault(); this.blur(); return false; }"
+                style="display:inline-block; min-width:25px; outline:none; padding: 0 2px;"
+                onkeypress="if(event.which==13) { event.preventDefault(); this.blur(); }"
                 onblur="updateCell(${it.rowIndex}, 4, this.innerText)">${r[4]}</span> hr
         </td>
-        <td style="padding:8px;">${payDisplay}</td>
-        <td style="padding:8px;">
-          <button style="color:#ff4d6d; font-size:14px;" onclick="del(${it.rowIndex})">✕</button>
+        <td style="padding:10px 8px;">${payDisplay}</td>
+        <td style="padding:10px 8px;">
+          <button style="color:#ff4d6d; font-size:13px;" onclick="del(${it.rowIndex})">✕</button>
         </td>
       </tr>`;
   });
@@ -820,12 +910,12 @@ function applyLockUI(){
   let lockOverlay = document.getElementById("tableLockOverlay");
   if(!lockOverlay) return;
 
-  let currentPageData = currentMonthData.slice(currentPage * 14, currentPage * 14 + 14);
+  // 🎯 လကျော်သွားပါစေ လက်ရှိစာမျက်နှာပေါ်မှာ ဒေတာ ၁၄ ခု (Row ၁၄ ခု) ပြည့်တာနဲ့ Lock ခတ်မည့်စနစ်
+  let currentRenderedRows = currentMonthData.slice(currentPage * 14, currentPage * 14 + 14);
 
-  // ၁၄ ရက်ပြည့်မှ Lock ခတ်မည်
-  if(currentPageData.length >= 14){
-    if(isLockedBySystem){
-      lockOverlay.style.display = "flex"; // 👈 ဒီနေရာ "flex" ဖြစ်နေရပါမယ်
+  if(currentRenderedRows.length >= 14) {
+    if(isLockedBySystem) {
+      lockOverlay.style.display = "flex";
     } else {
       lockOverlay.style.display = "none";
     }
@@ -1062,25 +1152,25 @@ async function exportPdf(){
     
 </script>
 <div id="toast" class="toast"></div>
-<div id="profilePage" style="display:none;" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-[999999999] p-4">
-  <div class="bg-gradient-to-b from-[#1c2541] to-[#0b132b] p-5 rounded-2xl w-full max-w-[340px] border border-white/10 shadow-2xl max-h-[92vh] overflow-y-auto">
+<div id="profilePage" style="display:none;" class="fixed inset-0 bg-black/75 backdrop-blur-sm flex justify-center items-center z-[999999999] p-4">
+  <div class="bg-[#1c2541] p-5 rounded-2xl w-full max-w-[330px] border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto">
     
     <div class="flex justify-between items-center mb-3">
-      <h2 class="text-cyan-400 font-extrabold text-sm tracking-wider">ACCOUNT & SETTINGS</h2>
-      <button onclick="toggleTheme()" class="w-8 h-8 rounded-full bg-yellow-500/10 text-yellow-400 flex items-center justify-center text-base border border-yellow-500/20">🌓</button>
+      <h2 class="text-cyan-400 font-extrabold text-xs tracking-wider">ACCOUNT & SETTINGS</h2>
+      <button onclick="toggleTheme()" class="w-8 h-8 rounded-full bg-yellow-500/10 text-yellow-400 flex items-center justify-center text-sm border border-yellow-500/20">🌓</button>
     </div>
 
     <div class="flex flex-col items-center mb-3">
-      <div class="relative w-16 h-16 rounded-full border-2 border-cyan-400 overflow-hidden mb-2 shadow-[0_0_15px_rgba(46,196,182,0.3)]">
+      <div class="relative w-16 h-16 rounded-full border-2 border-cyan-400 overflow-hidden mb-2 shadow-lg">
         <img id="modalProfilePic" src="https://i.postimg.cc/L473n1hp/Logo.png" class="w-full h-full object-cover">
       </div>
-      <label class="bg-cyan-900/40 hover:bg-cyan-900/80 text-cyan-400 text-[10px] px-2.5 py-1 rounded-md cursor-pointer font-bold border border-cyan-500/20 transition-all">
+      <label class="bg-cyan-900/40 hover:bg-cyan-900 text-cyan-400 text-[10px] px-2.5 py-1 rounded-md cursor-pointer font-bold border border-cyan-500/20">
         Upload Photo
         <input type="file" id="profileUpload" accept="image/*" class="hidden" onchange="uploadProfilePic(this)">
       </label>
     </div>
 
-    <div class="bg-black/40 p-2 rounded-xl border border-white/5 text-center mb-3">
+    <div class="bg-black/30 p-2 rounded-xl text-center mb-3 border border-white/5">
       <p id="accountStatus" class="text-[11px] font-semibold text-gray-300">Checking...</p>
       <p id="accountEmail" class="text-[10px] text-yellow-400 font-mono mt-0.5 break-all"></p>
     </div>
@@ -1088,35 +1178,35 @@ async function exportPdf(){
     <div id="authInputs" class="space-y-2 mb-3">
       <input id="userEmail" class="table-input" placeholder="Email">
       <input id="userPassword" type="password" class="table-input" placeholder="Password">
-      <div class="text-right">
-        <button onclick="forgotPassword()" class="text-[10px] text-cyan-400/80 hover:text-cyan-400 hover:underline">Forgot Password?</button>
-      </div>
-      <button onclick="loginAccount()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white p-2 rounded-xl font-bold text-xs">LOGIN</button>
+      <button onclick="loginAccount()" class="w-full bg-cyan-600 text-white p-2 rounded-xl font-bold text-xs">LOGIN</button>
     </div>
 
-    <div class="border-t border-white/10 pt-3 mb-4">
-      <h3 class="text-cyan-400 font-bold text-[11px] mb-2 tracking-wide">⚙️ APP CONFIGURATION</h3>
+    <div class="bg-black/20 p-3 rounded-xl border border-white/5 mb-3">
+      <h3 class="text-cyan-400 font-bold text-[10px] mb-2 tracking-wide">⚙️ APP CONFIGURATION</h3>
       <div class="grid grid-cols-2 gap-2 mb-2">
         <div>
           <label class="text-[9px] text-gray-400 block mb-0.5">Day Pay (฿)</label>
-          <input type="number" id="cfgDayPay" class="table-input" value="400" onchange="saveSettings()">
+          <input type="number" id="cfgDayPay" class="table-input" value="400">
         </div>
         <div>
           <label class="text-[9px] text-gray-400 block mb-0.5">OT Rate (฿/hr)</label>
-          <input type="number" id="cfgOtPay" class="table-input" value="50" onchange="saveSettings()">
+          <input type="number" id="cfgOtPay" class="table-input" value="50">
         </div>
       </div>
       <div>
         <label class="text-[9px] text-gray-400 block mb-0.5">Salary Start Cycle Day</label>
-        <input type="number" id="cfgStartDay" class="table-input" value="21" min="1" max="31" onchange="saveSettings()">
+        <input type="number" id="cfgStartDay" class="table-input" value="21" min="1" max="31">
       </div>
     </div>
 
-    <div class="space-y-1.5">
-      <button onclick="logoutAccount()" class="w-full bg-gradient-to-r from-rose-600 to-red-600 hover:brightness-110 text-white p-2 rounded-xl font-bold text-xs">
+    <div class="space-y-2">
+      <button onclick="saveSettings()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-xl font-bold text-xs">
+        SAVE SETTINGS
+      </button>
+      <button onclick="logoutAccount()" class="w-full bg-rose-600 text-white p-2 rounded-xl font-bold text-xs">
         LOGOUT
       </button>
-      <button onclick="closeProfile()" class="w-full bg-slate-700 hover:bg-slate-600 text-white p-2 rounded-xl font-bold text-xs">
+      <button onclick="closeProfile()" class="w-full bg-slate-700 text-white p-2 rounded-xl font-bold text-xs">
         CLOSE
       </button>
     </div>
