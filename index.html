@@ -43,7 +43,7 @@ const supabaseClient = createClient(
 );
 </script>
   
-<style>
+<style> 
 #monthView option {
   background: #1c2541;
   color: white;
@@ -127,20 +127,31 @@ tr:hover {
   background: #2a3b5f;
 }
 
+/* 🛠 CSS အဟောင်းနေရာတွင် အစားထိုးရန် */
 .lock-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  background: rgba(11, 19, 43, 0.85); /* ဇယားကွက်ကို မှောင်ပစ်ပြီး ပိတ်မည့် background */
+  backdrop-filter: blur(4px);        /* ပိုလန်းအောင် ဝါးတားတား Blur ပုံစံလုပ်ခြင်း */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  pointer-events: auto;              /* Lock ခတ်ထားချိန် ဇယားထဲက ဒေတာတွေကို နှိပ်မရအောင် တားဆီးခြင်း */
 }
 
 .lock-icon {
-  font-size: 60px;
-  color: rgba(255, 77, 109, .45);
-  position: sticky;
-  top: 50%;
-  transform: translateY(-50%);
+  font-size: 50px;
+  animation: pulse 1.5s infinite;    /* သက်ဝင်လှုပ်ရှားအောင် Lock ပုံကို တုန်ခါခိုင်းခြင်း */
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.6; }
 }
 </style>
 
@@ -287,8 +298,14 @@ ADD RECORD
  ရက်စွဲ - (တွက်ချက်နေသည်...)
 </div>
 
-<div class="table-container border border-gray-800"
-ondblclick="handleTableDoubleClick()">
+<div class="table-container border border-gray-800" style="position: relative;" ondblclick="handleTableDoubleClick()">
+  <table class="w-full text-center text-[12px]">
+    </table>
+  
+  <div id="tableLockOverlay" class="lock-overlay" style="display:none;">
+    <div class="lock-icon">🔒</div>
+  </div>
+</div>
   <table class="w-full text-center text-[12px]">
     <thead class="bg-[#0b132b] text-gray-400">
       <tr>
@@ -335,6 +352,22 @@ function getStorageKey(month){
 }
 
 function initApp(){
+ // CONFIG Settings ပြန်လည်ရယူခြင်း
+  let savedConfig = localStorage.getItem("KST_CONFIG");
+  if(savedConfig) {
+    CONFIG = JSON.parse(savedConfig);
+    if(document.getElementById("cfgDayPay")) document.getElementById("cfgDayPay").value = CONFIG.dayPay;
+    if(document.getElementById("cfgOtPay")) document.getElementById("cfgOtPay").value = CONFIG.otPayRate;
+    if(document.getElementById("cfgStartDay")) document.getElementById("cfgStartDay").value = CONFIG.salaryStartDay;
+  }
+  // Theme ပြန်လည်ရယူခြင်း
+  if(localStorage.getItem("KST_THEME") === "light") document.body.classList.add("light-theme");
+  // Profile ပုံ ပြန်လည်ရယူခြင်း
+  let savedPic = localStorage.getItem("KST_PROFILE_PIC");
+  if(savedPic && document.getElementById("modalProfilePic")) {
+    document.getElementById("modalProfilePic").src = savedPic;
+  }
+  
   let m=["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
   let monthView = document.getElementById("monthView");
   if(monthView) monthView.innerHTML = "";
@@ -347,6 +380,57 @@ function initApp(){
     document.getElementById("date").value=new Date().toISOString().split('T')[0];
   }
 }
+
+
+// ==========================================
+// ⚙️ NEW FEATURES SETTINGS LOGIC 
+// ==========================================
+
+let CONFIG = { dayPay: 400, otPayRate: 50, salaryStartDay: 21 };
+
+// 1️⃣ & 2️⃣ Configuration Save Settings
+function saveSettings() {
+  CONFIG.dayPay = parseFloat(document.getElementById("cfgDayPay").value) || 400;
+  CONFIG.otPayRate = parseFloat(document.getElementById("cfgOtPay").value) || 50;
+  CONFIG.salaryStartDay = parseInt(document.getElementById("cfgStartDay").value) || 21;
+  localStorage.setItem("KST_CONFIG", JSON.stringify(CONFIG));
+  showToast("⚙️ Settings ပြင်ဆင်မှု သိမ်းဆည်းပြီးပါပြီ");
+  calculate(); 
+  renderTable();
+}
+
+// 3️⃣ Forgot Password Alert Trigger
+function forgotPassword() {
+  alert("🔑 Password ပြန်လည်ရယူရန်အတွက် Developer 'Bo Hein' သို့ တိုက်ရိုက်ဆက်သွယ်ပြီး Master Key တောင်းခံပေးပါဗျာ။");
+}
+
+// 4️⃣ Profile Picture Upload & Save LocalStorage
+function uploadProfilePic(input) {
+  if (input.files && input.files[0]) {
+    let reader = new FileReader();
+    reader.onload = function(e) {
+      let base64Img = e.target.result;
+      localStorage.setItem("KST_PROFILE_PIC", base64Img);
+      document.getElementById("modalProfilePic").src = base64Img;
+      showToast("📸 Profile ပုံ ပြောင်းလဲပြီးပါပြီဗျာ");
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// 5️⃣ Dark / Light Theme Toggler Logic
+function toggleTheme() {
+  if(document.body.classList.contains("light-theme")) {
+    document.body.classList.remove("light-theme");
+    localStorage.setItem("KST_THEME", "dark");
+    showToast("🌙 Dark Theme သို့ ပြောင်းလိုက်ပါပြီ");
+  } else {
+    document.body.classList.add("light-theme");
+    localStorage.setItem("KST_THEME", "light");
+    showToast("☀️ Light Theme သို့ ပြောင်းလိုက်ပါပြီ");
+  }
+}
+  
   
 async function registerAccount(){
 
@@ -550,20 +634,26 @@ function calculate(){
   let resTotal = document.getElementById("resTotal");
 
   if(endTime === "OFF DAY"){
-    resOt.innerText="0 hr"; resTotal.innerText="฿0.00"; return;
+    resOt.innerText = "0 hr"; 
+    resTotal.innerText = "฿0.00"; 
+    return;
   }
+  
   if(endTime === "12:00 PM"){
-    resOt.innerText="0 hr"; resTotal.innerText="฿200.00"; return;
+    resOt.innerText = "0 hr"; 
+    resTotal.innerText = "฿" + (CONFIG.dayPay / 2).toFixed(2); 
+    return;
   }
 
   let map = {"05:00 PM":9, "06:00 PM":10, "07:00 PM":11, "08:00 PM":12, "09:00 PM":13, "10:00 PM":14};
   let hrs = map[endTime] || 9;
   let ot = hrs > 9 ? hrs - 9 : 0;
 
+  // ပြောင်းလဲထားတဲ့ CONFIG Settings အတိုင်း dynamic ပြန်ပြပေးမည့် နေရာအမှန်
   resOt.innerText = ot + " hr";
-  resTotal.innerText = "฿" + (400 + ot * 50).toFixed(2);
+  resTotal.innerText = "฿" + (CONFIG.dayPay + ot * CONFIG.otPayRate).toFixed(2);
 }
-
+  
 async function loadData(keepPage = false){
   let oldPage = currentPage;
   let month = document.getElementById("monthView").value;
@@ -627,8 +717,8 @@ function renderTable() {
   if (!tbody) return;
   tbody.innerHTML = "";
 
-  // 1. အကောင့်မဝင်ရသေးရင် LIST ဇယားထဲမှာ စာသားလေးပြပြီး ပေးသွားမည်
-  if (currentMonthData.length === 0) {
+  // 1. ဒေတာမရှိရင် (သို့မဟုတ်) အကောင့်မဝင်ရသေးရင် LIST ဇယားထဲမှာ စာသားပြမည်
+  if (!currentMonthData || currentMonthData.length === 0) {
     tbody.innerHTML = `
       <tr>
         <td colspan="4" style="padding: 40px 10px; color: #9ca3af; text-align: center; font-style: italic;">
@@ -638,22 +728,24 @@ function renderTable() {
     `;
     document.getElementById("total14Ot").innerText = "0 hr";
     document.getElementById("total14Pay").innerText = "฿0.00";
-    document.getElementById("dateRangeDisplay").innerText = "ရက်စွဲ - (အကောင့်မဝင်ရသေးပါ)";
+    document.getElementById("dateRangeDisplay").innerText = "ရက်စွဲ - (ဒေတာမှတ်တမ်း မရှိသေးပါ)";
     document.getElementById("pageInfo").innerText = "PAGE 1 (0 ခု)";
     document.getElementById("prevBtn").disabled = true;
     document.getElementById("nextBtn").disabled = true;
     if(document.getElementById("tableLockOverlay")) {
       document.getElementById("tableLockOverlay").style.display = "none";
     }
-    return; // အောက်က ကုဒ်တွေကို ဆက်မလုပ်ဘဲ ဒီတင်ရပ်မည်
+    return; 
   }
 
-  // 2. အကောင့်ဝင်ထားရင် ပုံမှန်အတိုင်း ဒေတာများ တွက်ချက်ပြသမည်
-  let start = currentPage * 14;
+  // ဒေတာများကို ရက်စွဲအလိုက် အရင်ဆုံး အစဉ်လိုက် (Ascending) စီပေးရပါမယ်
   currentMonthData.sort((a, b) => new Date(a.data[0]) - new Date(b.data[0]));
 
+  // စတင်ရမည့် စာမျက်နှာအမှတ်ကို သတ်မှတ်မယ်
+  let start = currentPage * 14;
   let page = currentMonthData.slice(start, start + 14);
  
+  // ရက်စွဲခေါင်းစဉ်ပြပေးမည့် Logic
   if (page.length > 0) {
     let firstDate = page[0].data[0];
     let lastDate = page[page.length - 1].data[0];
@@ -661,6 +753,7 @@ function renderTable() {
       "  " + firstDate + " <span style='-webkit-text-fill-color: #9ca3af;'>➔</span> " + lastDate;
   }
 
+  // ဇယားကွက် Row များ ထုတ်ပေးခြင်း Loop
   page.forEach(it => {
     let r = it.data;
     let otValue = parseFloat(r[4]) || 0;
@@ -681,24 +774,25 @@ function renderTable() {
       rowStyle = "color: #facc15; font-weight: bold;";
     }
 
+    // ပြင်ဆင်ပြီးသား UI: DATE ကို နှိပ်ရင် Date Picker ပွင့်ပြီး ပြင်လို့ရမယ်၊ OT ကို Click နှိပ်ပြီး ဂဏန်းရိုက်ပြင်လို့ရမယ်
     tbody.innerHTML += `
       <tr style="border-bottom:0.5px solid rgba(255,255,255,0.08); ${rowStyle}">
         <td style="padding:8px; position:relative;">
-          <span onclick="this.nextElementSibling.click()" style="cursor:pointer;">${r[0]}</span>
+          <span onclick="this.nextElementSibling.style.display='inline-block'; this.style.display='none';" style="cursor:pointer; border-bottom: 1px dashed #2ec4b6;">${r[0]}</span>
           <input type="date" value="${r[0]}" 
-                 style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;"
+                 style="display:none; background:#16213e; color:white; border:1px solid #2ec4b6; rounded:6px; padding:2px; font-size:11px;"
                  onchange="updateCell(${it.rowIndex}, 0, this.value)">
         </td>
         <td style="padding:8px;">
           <span contenteditable="true" 
                 inputmode="decimal"
-                style="display:inline-block; min-width:25px; outline:none;"
+                style="display:inline-block; min-width:30px; outline:none; border-bottom: 1px dashed #facc15; padding: 0 4px;"
                 onkeypress="if(event.which==32 || event.which==13) { event.preventDefault(); this.blur(); return false; }"
                 onblur="updateCell(${it.rowIndex}, 4, this.innerText)">${r[4]}</span> hr
         </td>
         <td style="padding:8px;">${payDisplay}</td>
         <td style="padding:8px;">
-          <button style="color:#ff4d6d" onclick="del(${it.rowIndex})">✕</button>
+          <button style="color:#ff4d6d; font-size:14px;" onclick="del(${it.rowIndex})">✕</button>
         </td>
       </tr>`;
   });
@@ -711,30 +805,21 @@ function renderTable() {
   document.getElementById("nextBtn").disabled = ((currentPage + 1) * 14 >= currentMonthData.length);
   applyLockUI();
 }
-
+  
 function applyLockUI(){
-
-  let lockOverlay =
-  document.getElementById("tableLockOverlay");
-
+  let lockOverlay = document.getElementById("tableLockOverlay");
   if(!lockOverlay) return;
 
-  let currentPageData =
-  currentMonthData.slice(
-    currentPage * 14,
-    currentPage * 14 + 14
-  );
+  let currentPageData = currentMonthData.slice(currentPage * 14, currentPage * 14 + 14);
 
-  // ၁၄ရက်ပြည့်မှ lock ခတ်
+  // ၁၄ ရက်ပြည့်မှ Lock ခတ်မည်
   if(currentPageData.length >= 14){
-
     if(isLockedBySystem){
-      lockOverlay.style.display = "flex";
-    }else{
+      lockOverlay.style.display = "flex"; // 👈 ဒီနေရာ "flex" ဖြစ်နေရပါမယ်
+    } else {
       lockOverlay.style.display = "none";
     }
-
-  }else{
+  } else {
     lockOverlay.style.display = "none";
   }
 }
@@ -800,7 +885,7 @@ async function saveData(){
   let isOff = endVal === "OFF DAY";
   let isHalf = endVal === "12:00 PM";
   let ot = hrs > 9 ? hrs - 9 : 0;
-  let dailyPay = isOff ? 0 : (isHalf ? 200 : 400 + ot * 50);
+  let dailyPay = isOff ? 0 : (isHalf ? (CONFIG.dayPay / 2) : CONFIG.dayPay + ot * CONFIG.otPayRate);
 
   // duplicate check (မိမိအကောင့်ထဲမှာပဲ ဒီရက်စွဲ ရှိမရှိ စစ်တာဖြစ်လို့ .eq("user_id", user.id) ထည့်ရပါမယ်)
   const { data: oldData } = await supabaseClient
@@ -826,7 +911,7 @@ async function saveData(){
       end_time: endVal,
       work_hours: isOff ? 0 : (isHalf ? 4 : hrs),
       ot_hours: isOff || isHalf ? 0 : ot,
-      ot_pay: "฿" + (ot * 50).toFixed(2),
+      ot_pay: "฿" + (ot * CONFIG.otPayRate).toFixed(2),
       daily_pay: "฿" + dailyPay.toFixed(2)
     }]);
 
@@ -888,17 +973,11 @@ columnMap[colIndex]
 
 // OT ပြောင်းရင် daily pay ပြန်တွက်
 if(colIndex == 4){
-
-let ot = parseFloat(newValue) || 0;
-
-updateData.daily_pay =
-  "฿" + (400 + ot * 50).toFixed(2);
-
-updateData.ot_pay =
-  "฿" + (ot * 50).toFixed(2);
-
+  let ot = parseFloat(newValue) || 0;
+  // CONFIG Variable သုံးပြီး Daily Pay နှင့် OT Pay ပြန်တွက်ခြင်း
+  updateData.daily_pay = "฿" + (CONFIG.dayPay + ot * CONFIG.otPayRate).toFixed(2);
+  updateData.ot_pay = "฿" + (ot * CONFIG.otPayRate).toFixed(2);
 }
-
 const { error } =
 await supabaseClient
 .from("salary_data")
@@ -975,27 +1054,62 @@ async function exportPdf(){
 <div id="toast" class="toast"></div>
 
 <div id="profilePage" style="display:none;" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-[999999999]">
-  <div class="bg-gradient-to-b from-[#1e293b] to-[#0f172a] p-6 rounded-2xl w-[350px] border border-white/10 shadow-2xl transition-all">
+  <div class="bg-gradient-to-b from-[#1e293b] to-[#0f172a] p-6 rounded-2xl w-[360px] border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto">
     
-    <h2 class="text-center text-cyan-400 font-extrabold text-xl tracking-wider mb-4">ACCOUNT</h2>
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-cyan-400 font-extrabold text-lg tracking-wider">ACCOUNT & SETTINGS</h2>
+      <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center text-lg border border-yellow-500/40">🌓</button>
+    </div>
 
-    <div class="bg-black/20 p-3 rounded-xl border border-white/5 text-center mb-4">
-      <p id="accountStatus" class="text-sm font-semibold text-gray-200">Checking...</p>
+    <div class="flex flex-col items-center mb-4">
+      <div class="relative w-20 h-20 rounded-full border-2 border-cyan-400 overflow-hidden mb-2">
+        <img id="modalProfilePic" src="https://i.postimg.cc/L473n1hp/Logo.png" class="w-full h-full object-cover">
+      </div>
+      <label class="bg-cyan-700/50 hover:bg-cyan-700 text-cyan-300 text-[11px] px-3 py-1 rounded-md cursor-pointer font-bold border border-cyan-500/30">
+        Upload Photo
+        <input type="file" id="profileUpload" accept="image/*" class="hidden" onchange="uploadProfilePic(this)">
+      </label>
+    </div>
+
+    <div class="bg-black/30 p-3 rounded-xl border border-white/5 text-center mb-4">
+      <p id="accountStatus" class="text-xs font-semibold text-gray-300">Checking...</p>
       <p id="accountEmail" class="text-xs text-yellow-400 font-mono mt-1 break-all"></p>
     </div>
 
-   <!-- 🎯 REGISTER ကို ဖြုတ်ပြီး LOGIN တစ်ခုပဲ ထားရှိမည့်ပုံစံ -->
-    <div id="authInputs" class="space-y-2">
-      <input id="userEmail" class="table-input" placeholder="Email" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
-      <input id="userPassword" type="password" class="table-input" placeholder="Password" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
-      <button onclick="loginAccount()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold text-sm mt-2">LOGIN</button>
+    <div id="authInputs" class="space-y-2 mb-4">
+      <input id="userEmail" class="table-input !py-2 !text-xs" placeholder="Email" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
+      <input id="userPassword" type="password" class="table-input !py-2 !text-xs" placeholder="Password" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);">
+      
+      <div class="text-right">
+        <button onclick="forgotPassword()" class="text-[11px] text-cyan-400 hover:underline">Forgot Password?</button>
+      </div>
+      
+      <button onclick="loginAccount()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-2.5 rounded-xl font-bold text-xs mt-1">LOGIN</button>
     </div>
 
-    <div class="mt-4 space-y-2">
-      <button onclick="logoutAccount()" class="w-full bg-gradient-to-r from-rose-600 to-red-600 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold text-sm shadow-lg shadow-red-900/30 transition-all">
+    <div class="border-t border-white/10 pt-4 mb-4">
+      <h3 class="text-cyan-400 font-bold text-xs mb-3">⚙️ APP CONFIGURATION</h3>
+      <div class="grid grid-cols-2 gap-2 mb-2">
+        <div>
+          <label class="text-[10px] text-gray-400 block mb-1">1️⃣ Day Pay (฿)</label>
+          <input type="number" id="cfgDayPay" class="table-input !p-2 !text-xs" value="400" onchange="saveSettings()">
+        </div>
+        <div>
+          <label class="text-[10px] text-gray-400 block mb-1">1️⃣ OT Rate (฿/hr)</label>
+          <input type="number" id="cfgOtPay" class="table-input !p-2 !text-xs" value="50" onchange="saveSettings()">
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] text-gray-400 block mb-1">2️⃣ Salary Start Cycle Day (လစာစတင်တွက်ချက်မည့်ရက်)</label>
+        <input type="number" id="cfgStartDay" class="table-input !p-2 !text-xs" value="21" min="1" max="31" onchange="saveSettings()">
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <button onclick="logoutAccount()" class="w-full bg-gradient-to-r from-rose-600 to-red-600 text-white p-2.5 rounded-xl font-bold text-xs shadow-lg shadow-red-900/30">
         LOGOUT
       </button>
-      <button onclick="closeProfile()" class="w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:brightness-110 active:scale-95 text-white p-3 rounded-xl font-bold text-sm transition-all">
+      <button onclick="closeProfile()" class="w-full bg-gradient-to-r from-slate-600 to-slate-700 text-white p-2.5 rounded-xl font-bold text-xs">
         CLOSE
       </button>
     </div>
