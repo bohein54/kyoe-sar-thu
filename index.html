@@ -56,33 +56,21 @@ color: white;
 
 
 body {
-
-margin: 0;
-
-background: linear-gradient(135deg, #0b132b, #1c2541);
-
-color: white;
-
-font-family: sans-serif;
-
+  margin:0;
+  background: linear-gradient(135deg,#0b132b,#1c2541);
+  color:white;
+  font-family:sans-serif;
 }
 
 
 
-.table-input {
-
-background: #16213e;
-
-padding: 12px;
-
-border-radius: 12px;
-
-width: 100%;
-
-border: 1px solid #2ec4b6;
-
-color: white;
-
+.table-input{
+  background:#16213e;
+  padding:12px;
+  border-radius:12px;
+  width:100%;
+  border:1px solid #2ec4b6;
+  color: white;
 }
 
 
@@ -143,94 +131,54 @@ select#monthView {
 
 /* ✅ လှပသော TOAST NOTIFICATION DESIGN သစ် (ပွားနေတာတွေ ရှင်းပြီးသား) */
 
-.toast {
-
-position: fixed !important;
-
-top: -100px !important;
-
-left: 50% !important;
-
-transform: translateX(-50%) scale(0.9) !important;
-
-z-index: 9999999999 !important;
-
-opacity: 0;
-
-pointer-events: none;
-
-transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-padding: 14px 28px;
-
-border-radius: 14px;
-
-font-size: 14px;
-
-font-weight: bold;
-
-letter-spacing: 0.5px;
-
-text-align: center;
-
-min-width: 280px;
-
-max-width: 90%;
-
-color: white;
-
+.toast{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#16a34a;
+  color:white;
+  padding:14px 24px;
+  border-radius:14px;
+  font-weight:bold;
+  z-index:9999;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+  box-shadow:0 0 20px rgba(0,0,0,.4);
 }
 
-
-
-.toast.show {
-
-opacity: 1;
-
-top: 25px !important;
-
-transform: translateX(-50%) scale(1) !important;
-
+.toast.show{
+  opacity:1;
+  top:35px;
 }
 
-
-
-tr:hover {
-
-background: #2a3b5f;
-
+.table-container{
+  max-height:450px;
+  overflow-y:auto;
+  border-radius:15px;
+  background:#1c2541;
 }
 
-
-
-.lock-overlay {
-
-position: absolute;
-
-top: 0;
-
-left: 0;
-
-width: 100%;
-
-height: 100%;
-
+tr { height: 55px; }
+tr:hover{
+  background:#2a3b5f;
 }
 
+.lock-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(11,19,43,.55);
+  backdrop-filter:blur(2px);
+  z-index:50;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
 
-
-.lock-icon {
-
-font-size: 60px;
-
-color: rgba(255, 77, 109, .45);
-
-position: sticky;
-
-top: 50%;
-
-transform: translateY(-50%);
-
+.lock-icon{
+  font-size:60px;
+  color:rgba(255,77,109,.45);
 }
 
 </style>
@@ -291,10 +239,12 @@ transform: translateY(-50%);
     <input type="date" id="date" class="table-input mb-3">
 
     <label class="text-[10px] text-cyan-400 font-bold mb-1 block">အလုပ်ဝင်ချိန်</label>
-    <select id="startTime" class="table-input mb-3" onchange="calculate()">
-      <option value="08:00 AM">08:00 AM</option>
-      <option value="OFF DAY">အလုပ်ပိတ်ရက်</option>
-    </select>
+    <input
+  id="startTime"
+  class="table-input mb-3"
+  value="08:00 AM"
+  readonly
+>
 
     <label class="text-[10px] text-cyan-400 font-bold mb-1 block">အလုပ်ထွက်ချိန်</label>
     <select id="endTime" class="table-input mb-4" onchange="calculate()">
@@ -379,6 +329,7 @@ ADD RECORD
     <thead>
       <tr class="bg-black/20 text-gray-400 font-bold">
         <th class="p-3 border-b border-gray-800">DATE</th>
+        <th class="p-3 border-b border-gray-700">DAY</th>
         <th class="p-3 border-b border-gray-800">OT</th>
         <th class="p-3 border-b border-gray-800">PAY</th>
         <th class="p-3 border-b border-gray-800">DEL</th>
@@ -779,25 +730,8 @@ async function loadData(keepPage = false){
     return;
   }
 
-  currentMonthData = data
-    .filter(item => {
-      let itemMonth = new Date(item.data).toLocaleString("en-US", { month:"long" }).toUpperCase();
-      return itemMonth === month;
-    })
-    .map(item => {
-      return {
-        rowIndex: item.id,
-        data:[
-          item.data,
-          item.start_time,
-          item.end_time,
-          item.work_hours,
-          item.ot_hours,
-          item.ot_pay,
-          item.daily_pay
-        ]
-      };
-    });
+ let start = currentPage * 14;
+  let page = currentMonthData.slice(start, start + 14);
 
   if(keepPage){
     currentPage = oldPage;
@@ -860,6 +794,24 @@ function renderTable() {
 
     let otDisplay, payDisplay, rowStyle;
 
+let dayName = "";
+
+if(r[0]){
+  let d = new Date(r[0]);
+
+  let days = [
+    "SUN",
+    "MON",
+    "TUE",
+    "WED",
+    "THU",
+    "FRI",
+    "SAT"
+  ];
+
+  dayName = days[d.getDay()];
+}
+    
     if (r[2] === "OFF DAY" ) {
       otDisplay = "OFF DAY";
       payDisplay = "အလုပ်ပိတ်ရက်";
@@ -874,54 +826,68 @@ function renderTable() {
 
     // Dash border များဖျောက်ထားပြီး သပ်ရပ်သွားသော ဇယားကွက် Row UI
     tbody.innerHTML += `
-      <tr style="border-bottom:0.5px solid rgba(255,255,255,0.08); ${rowStyle}">
-        <td style="padding:10px 8px;">
-          <span onclick="this.nextElementSibling.style.display='inline-block'; this.style.display='none';" style="cursor:pointer;">${r[0]}</span>
-          <input type="date" value="${r[0]}" 
+      <tr style="border-bottom:1px solid #2ec4b6; ${rowStyle}">
+        <td style="padding:8px; position:relative;">
+          <<span onclick="this.nextElementSibling.click()" style="cursor:pointer;">${r[0]}</span>
+        <input type="date" value="${r[0]}" 
                  style="display:none; background:#16213e; color:white; border:1px solid #2ec4b6; padding:2px; font-size:11px; rounded:4px;"
                  onchange="updateCell(${it.rowIndex}, 0, this.value)">
         </td>
-        <td style="padding:10px 8px;">
-          <span contenteditable="true" 
-                inputmode="decimal"
-                style="display:inline-block; min-width:25px; outline:none; padding: 0 2px;"
-                onkeypress="if(event.which==13) { event.preventDefault(); this.blur(); }"
+        
+<td style="padding:8px;">${dayName}</td>
+         
+      <td style="padding:8px;">
+        <span contenteditable="true" 
+              inputmode="decimal"
+              style="display:inline-block; min-width:25px; outline:none;"
+                onkeypress="if(event.which==32 || event.which==13) { event.preventDefault(); this.blur(); return false; }"
                 onblur="updateCell(${it.rowIndex}, 4, this.innerText)">${r[4]}</span> hr
         </td>
-        <td style="padding:10px 8px;">${payDisplay}</td>
-        <td style="padding:10px 8px;">
+         <td style="padding:8px;">${payDisplay}</td>
+      <td style="padding:8px;">
           <button style="color:#ff4d6d; font-size:13px;" onclick="del(${it.rowIndex})">✕</button>
         </td>
       </tr>`;
   });
 
-  document.getElementById("total14Ot").innerText = tOt + " hr";
+   document.getElementById("total14Ot").innerText = tOt + " hr";
   document.getElementById("total14Pay").innerText = "฿" + tPay.toFixed(2);
+
+  // စာမျက်နှာ အချက်အလက်
   document.getElementById("pageInfo").innerText = "PAGE " + (currentPage + 1) + "  (" + page.length + " ခု)";
 
   document.getElementById("prevBtn").disabled = (currentPage === 0);
   document.getElementById("nextBtn").disabled = ((currentPage + 1) * 14 >= currentMonthData.length);
   applyLockUI();
 }
+
   
 function applyLockUI(){
-  let lockOverlay = document.getElementById("tableLockOverlay");
+
+  let lockOverlay =
+  document.getElementById("tableLockOverlay");
+
   if(!lockOverlay) return;
 
-  // 🎯 လကျော်သွားပါစေ လက်ရှိစာမျက်နှာပေါ်မှာ ဒေတာ ၁၄ ခု (Row ၁၄ ခု) ပြည့်တာနဲ့ Lock ခတ်မည့်စနစ်
-  let currentRenderedRows = currentMonthData.slice(currentPage * 14, currentPage * 14 + 14);
+  let currentPageData =
+  currentMonthData.slice(
+    currentPage * 14,
+    currentPage * 14 + 14
+  );
 
-  if(currentRenderedRows.length >= 14) {
-    if(isLockedBySystem) {
+  // ၁၄ရက်ပြည့်မှ lock ခတ်
+  if(currentPageData.length >= 14){
+
+    if(isLockedBySystem){
       lockOverlay.style.display = "flex";
-    } else {
+    }else{
       lockOverlay.style.display = "none";
     }
-  } else {
+
+  }else{
     lockOverlay.style.display = "none";
   }
 }
-
 function handleTableDoubleClick(){
 
   let currentPageData =
@@ -1086,7 +1052,7 @@ async function updateCell(rowIndex, colIndex, newValue) {
   // 3. Supabase Database သို့ ဒေတာ အလိုအလျောက် သွားသိမ်းခြင်း
   try {
     let rowId = updateData.id; 
-    let { error } = await _supabase
+    let { error } = await _supabaseClient
       .from('your_table_name') // ⚠️ မိမိရဲ့ Supabase Table အမည် မှန်အောင် ပြန်ထည့်ပေးပါဗျာ
       .update({ data: updateData.data })
       .eq('id', rowId);
@@ -1117,32 +1083,83 @@ function showTab(tab){
     l.classList.remove("hidden"); // hidden ကို ဖြုတ်ပြီး ပြသမည်
     e.classList.add("hidden");
     
-    // 💡 LIST သို့ သွားတိုင်း နောက်ဆုံးရဒေတာကို Supabase ထံမှ အလိုအလျောက် ပြန်ဆွဲခိုင်းမည်
-    loadData(true);
+    loadData();
   }
 }
 
 async function exportPdf(){
-  // jsPDF Library ကို အမှန်ကန်ဆုံး လှမ်းယူခြင်း
   const { jsPDF } = window.jspdf;
-  let pdf = new jsPDF("p", "mm", "a4");
+  let pdf = new jsPDF("p","mm","a4");
   let startY = 20;
+  let month = document.getElementById("monthView").value;
+  let year = new Date().getFullYear();
 
   pdf.setFontSize(18);
-  pdf.text("KYOE SAR THU", 105, 12, {align:"center"});
+  pdf.setTextColor(0, 102, 204);
+  pdf.text(month + " " + year, 105, 12, {align:"center"});
+
+  let totalOt = document.getElementById("total14Ot").innerText;
+  let totalPay = document.getElementById("total14Pay").innerText.replace("฿","Baht ");
+
+  pdf.setDrawColor(200);
+  pdf.setFillColor(240, 248, 255);
+  pdf.roundedRect(10, startY, 190, 12, 3, 3, "F");
+
+  pdf.setTextColor(0);
+  pdf.setFontSize(11);
+  pdf.text("Total OT: " + totalOt, 15, startY + 8);
+  pdf.text("Total Pay: " + totalPay, 130, startY + 8);
+
+  startY += 18;
 
   let start = currentPage * 14;
   let pageData = currentMonthData.slice(start, start + 14);
 
-  pageData.forEach(it=>{
-    let r = it.data;
-    pdf.text(r[0], 20, startY);
-    pdf.text(r[4] + " hr", 90, startY);
-    pdf.text(r[6], 140, startY);
+  if(pageData.length > 0){
+    let firstDate = pageData[0].data[0];
+    let lastDate = pageData[pageData.length - 1].data[0];
+    pdf.setFontSize(11);
+    pdf.setTextColor(120);
+    pdf.text("Date: " + firstDate + "  to  " + lastDate, 105, startY, {align:"center"});
     startY += 10;
-  });
+  }
 
-  pdf.save("KYOE_SAR_THU.pdf");
+  pdf.setFillColor(0, 102, 204);
+  pdf.setTextColor(255);
+  pdf.rect(10, startY, 190, 8, "F");
+  pdf.text("DATE", 15, startY + 5.5);
+  pdf.text("OT", 85, startY + 5.5);
+  pdf.text("PAY", 130, startY + 5.5);
+  startY += 10;
+
+  let logo = new Image();
+  logo.src = "https://i.postimg.cc/4KyyNxHX/Logo.png";
+  await new Promise(resolve => { logo.onload = resolve; });
+
+  pdf.setGState(new pdf.GState({opacity: 0.08}));
+  pdf.addImage(logo, "PNG", 55, 100, 100, 100);
+  pdf.setGState(new pdf.GState({opacity: 1}));
+  pdf.setTextColor(0);
+
+  pageData.forEach((it, index)=>{
+    let r = it.data;
+    let date = r[0];
+    let isOff = r[1] === "OFF DAY" || r[2] === "OFF DAY";
+    let ot = isOff ? "OFF" : r[4] + " hr";
+    let pay = isOff ? "OFF DAY" : r[6].replace("฿","") + " Baht";
+
+    if(index % 2 == 0){
+      pdf.setFillColor(245,245,245);
+      pdf.rect(10, startY - 4, 190, 8, "F");
+    }
+    if(isOff){ pdf.setTextColor(200,0,0); }else{ pdf.setTextColor(0); }
+
+    pdf.text(date.toString(), 15, startY);
+    pdf.text(ot.toString(), 85, startY);
+    pdf.text(pay.toString(), 130, startY);
+    startY += 8;
+  });
+  pdf.save(month + "_KYOE SAR THU.pdf");
 }
 
     
