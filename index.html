@@ -678,15 +678,19 @@ function showToast(message, type = "success") {
 }
 
 function calculate(){
-  let endTime = document.getElementById("endTime").value;
+   let endTime = document.getElementById("endTime").value;
+  let startTime = document.getElementById("startTime");
   let resOt = document.getElementById("resOt");
   let resTotal = document.getElementById("resTotal");
 
+  // Auto Start Time
   if(endTime === "OFF DAY"){
-    resOt.innerText = "0 hr"; 
-    resTotal.innerText = "฿0.00"; 
+    startTime.value = "အလုပ်ပိတ်ရက်";
+    resOt.innerText="0 hr";
+    resTotal.innerText="฿0.00";
     return;
   }
+   startTime.value = "08:00 AM";
   
   if(endTime === "12:00 PM"){
     resOt.innerText = "0 hr"; 
@@ -723,6 +727,7 @@ async function loadData(keepPage = false){
     .select("*")
     .eq("user_id", user.id)
     .order("data", { ascending:true });
+  currentMonthData = data || [];
 
   if(error){
     console.log(error);
@@ -787,17 +792,17 @@ function renderTable() {
 
   // ဇယားကွက် Row များ ထုတ်ပေးခြင်း Loop
   page.forEach(it => {
-    let r = it.data;
-    let otValue = parseFloat(r[4]) || 0;
-    let payStr = r[6] ? r[6].toString() : "0";
+    let r = it;
+    let otValue = parseFloat(r.ot_hours) || 0;
+    let payStr = r.daily_pay ? r.daily_pay.toString() : "0";
     let payValue = parseFloat(payStr.replace('฿', '').replace(',', '')) || 0;
 
     let otDisplay, payDisplay, rowStyle;
 
 let dayName = "";
 
-if(r[0]){
-  let d = new Date(r[0]);
+if(r.data){
+  let d = new Date(r.data);
 
   let days = [
     "SUN",
@@ -819,8 +824,8 @@ if(r[0]){
     } else {
       tOt += otValue;
       tPay += payValue;
-      otDisplay = r[4] + " hr";
-      payDisplay = r[6];
+      otDisplay = r.ot_hours + " hr";
+      payDisplay = r.daily_pay;
       rowStyle = "color: #facc15; font-weight: bold;";
     }
 
@@ -828,8 +833,8 @@ if(r[0]){
     tbody.innerHTML += `
       <tr style="border-bottom:1px solid #2ec4b6; ${rowStyle}">
         <td style="padding:8px; position:relative;">
-          <<span onclick="this.nextElementSibling.click()" style="cursor:pointer;">${r[0]}</span>
-        <input type="date" value="${r[0]}" 
+          <<span onclick="this.nextElementSibling.click()" style="cursor:pointer;">${r.data}</span>
+        <input type="date" value="${r.data}" 
                  style="display:none; background:#16213e; color:white; border:1px solid #2ec4b6; padding:2px; font-size:11px; rounded:4px;"
                  onchange="updateCell(${it.rowIndex}, 0, this.value)">
         </td>
@@ -841,7 +846,7 @@ if(r[0]){
               inputmode="decimal"
               style="display:inline-block; min-width:25px; outline:none;"
                 onkeypress="if(event.which==32 || event.which==13) { event.preventDefault(); this.blur(); return false; }"
-                onblur="updateCell(${it.rowIndex}, 4, this.innerText)">${r[4]}</span> hr
+                onblur="updateCell(${it.rowIndex}, 4, this.innerText)">${r.ot_hours}</span> hr
         </td>
          <td style="padding:8px;">${payDisplay}</td>
       <td style="padding:8px;">
@@ -1052,8 +1057,8 @@ async function updateCell(rowIndex, colIndex, newValue) {
   // 3. Supabase Database သို့ ဒေတာ အလိုအလျောက် သွားသိမ်းခြင်း
   try {
     let rowId = updateData.id; 
-    let { error } = await _supabaseClient
-      .from('your_table_name') // ⚠️ မိမိရဲ့ Supabase Table အမည် မှန်အောင် ပြန်ထည့်ပေးပါဗျာ
+    let { error } = await supabaseClient
+      .from('salary_data') // ⚠️ မိမိရဲ့ Supabase Table အမည် မှန်အောင် ပြန်ထည့်ပေးပါဗျာ
       .update({ data: updateData.data })
       .eq('id', rowId);
 
@@ -1143,7 +1148,7 @@ async function exportPdf(){
 
   pageData.forEach((it, index)=>{
     let r = it.data;
-    let date = r[0];
+    let date = r.data;
     let isOff = r[1] === "OFF DAY" || r[2] === "OFF DAY";
     let ot = isOff ? "OFF" : r[4] + " hr";
     let pay = isOff ? "OFF DAY" : r[6].replace("฿","") + " Baht";
